@@ -53,9 +53,9 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
     // UNITS ARE METERS
     double tagsize = 0.166;
 
-    int TAG_1 = 0; // Tag ID 18 from the 36h11 family
-    int TAG_2 = 1;
-    int TAG_3 = 2;
+    int TAG_1 = 1; // Tag ID 18 from the 36h11 family
+    int TAG_2 = 2;
+    int TAG_3 = 3;
 
     AprilTagDetection tagOfInterest = null;
 
@@ -119,7 +119,7 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
 
                 if(tagFound)
                 {
-                    telemetry.addLine("Found tag #" + (tagOfInterest.id+1) + "!\n\nLocation data:");
+                    telemetry.addLine("Found tag #" + tagOfInterest.id + "!\n\nLocation data:");
                     tagToTelemetry(tagOfInterest);
                 }
                 else

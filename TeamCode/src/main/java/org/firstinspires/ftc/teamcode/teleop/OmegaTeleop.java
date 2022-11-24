@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.hardware.Robot;
 
 @TeleOp(name="Test")
 public class OmegaTeleop extends OpMode {
@@ -17,35 +18,75 @@ public class OmegaTeleop extends OpMode {
     double fl;
     double bl;
 
+    boolean motionProfile = false;
+
     @Override
     public void init() {
         robot = new Robot();
         robot.init(hardwareMap, false);
 
-        fr = robot.frontRight.getCurrentPosition();
-        bl = robot.backLeft.getCurrentPosition();
-        br = robot.backRight.getCurrentPosition();
-        fl = robot.frontLeft.getCurrentPosition();
+        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
+        telemetry.addData("left servo targ", robot.leftS.getTargetPosition());
 
-        // intake pos
-        robot.setServoPos(0.1);
+//        fr = robot.frontRight.getCurrentPosition();
+//        bl = robot.backLeft.getCurrentPosition();
+//        br = robot.backRight.getCurrentPosition();
+//        fl = robot.frontLeft.getCurrentPosition();
     }
 
     @Override
     public void loop() {
-        intake();
-        moveServos();
-        simplifiedDrive(2);
+        compareServos();
+        if(motionProfile){
+            robot.leftS.update();
+            robot.rightS.update(robot.leftS);
+        }
+        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
+        telemetry.addData("left servo targ", robot.leftS.getTargetPosition());
+        //intake();
+        //moveServos();
+        //simplifiedDrive(2);
 
-        telemetry.addData("front right pos", robot.frontRight.getCurrentPosition()-fr);
-        telemetry.addData("back right pos", robot.backRight.getCurrentPosition()-br);
-        telemetry.addData("front left pos", robot.frontLeft.getCurrentPosition()-fl);
-        telemetry.addData("back left pos", robot.backLeft.getCurrentPosition()-bl);
+//        telemetry.addData("front right pos", robot.frontRight.getCurrentPosition()-fr);
+//        telemetry.addData("back right pos", robot.backRight.getCurrentPosition()-br);
+//        telemetry.addData("front left pos", robot.frontLeft.getCurrentPosition()-fl);
+//        telemetry.addData("back left pos", robot.backLeft.getCurrentPosition()-bl);
     }
 
-    @Override
-    public void stop() {
-        robot.setServoPos(0);
+    public void compareServos(){
+        /*
+        if(gamepad1.a){
+            robot.leftS.setTargetPosition(1);
+            robot.rightS.setTargetPosition(1);
+        }
+        if (gamepad1.b){
+            robot.leftS.setTargetPosition(0);
+            robot.rightS.setTargetPosition(0);
+        }*/
+
+        // init position, no motion profile
+        if(gamepad1.b){
+            motionProfile = false;
+            robot.leftS.setTargetPosition(0);
+            robot.rightS.setTargetPosition(0);
+        }
+
+        // intake position, requires motion profile
+        if(gamepad1.a){
+            motionProfile = true;
+            // TODO, when moving from outtake to intake position, what pos is servo in originally? it'll technically b negative
+            if(robot.getDirection() == Robot.ServoDirection.OUTTAKE) robot.flipDirection();
+            robot.leftS.setTargetPosition(0.2);
+            robot.leftS.setTargetPosition(0.2);
+        }
+
+        // outtake position, requires motion profile
+        if(gamepad1.x){
+            motionProfile = true;
+            if(robot.getDirection() == Robot.ServoDirection.INTAKE) robot.flipDirection();
+            robot.leftS.setTargetPosition(0.2);
+            robot.leftS.setTargetPosition(0.2);
+        }
     }
 
     public void moveServos(){
