@@ -17,8 +17,8 @@ public class Robot {
     public DcMotorEx backLeft;
     public DcMotorEx frontLeft;
 
-    private Servo leftServo;
-    private Servo rightServo;
+    public Servo leftServo;
+    public Servo rightServo;
     public ServoProfiler leftS;
     public ServoProfiler rightS;
 
@@ -29,10 +29,11 @@ public class Robot {
     ServoDirection s;
 
     public ServoDirection getDirection() {return s;}
+    public void setDirection(ServoDirection s) {this.s = s;}
 
     public void init(HardwareMap hardwareMap, boolean autoRunning){
         s = ServoDirection.INTAKE;
-        /*
+
         if (!autoRunning) {
             backRight = hardwareMap.get(DcMotorEx.class, "back_right");
             frontRight = hardwareMap.get(DcMotorEx.class, "front_right");
@@ -57,7 +58,7 @@ public class Robot {
 
             frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
             backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        }*/
+        }
 
 //        leftSlides = hardwareMap.get(DcMotorEx.class, "left_slides");
 //        rightSlides = hardwareMap.get(DcMotorEx.class, "right_slides");
@@ -84,25 +85,10 @@ public class Robot {
         leftServo = hardwareMap.get(Servo.class, "left_servo");
         rightServo = hardwareMap.get(Servo.class, "right_servo");
 
-        rightServo.setDirection(Servo.Direction.FORWARD);
-        leftServo.setDirection(Servo.Direction.REVERSE);
-
-        leftS = new ServoProfiler(leftServo);
-        leftS.setConstraints(1, 1, 1);
-        rightS = new ServoProfiler(rightServo);
-        rightS.setConstraints(1, 1, 1);
-    }
-
-    public void flipDirection(){
-        if(s == ServoDirection.OUTTAKE){
-            s = ServoDirection.INTAKE;
-            rightServo.setDirection(Servo.Direction.FORWARD);
-            leftServo.setDirection(Servo.Direction.REVERSE);
-            return;
-        }
-        s = ServoDirection.OUTTAKE;
         rightServo.setDirection(Servo.Direction.REVERSE);
         leftServo.setDirection(Servo.Direction.FORWARD);
+
+        setServoPos(0.4);
     }
 
     public void setServoPos(double pos){

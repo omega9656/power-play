@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.hardware.ServoProfiler;
 
 @TeleOp(name="Test")
 public class OmegaTeleop extends OpMode {
@@ -18,34 +20,48 @@ public class OmegaTeleop extends OpMode {
     double fl;
     double bl;
 
-    boolean motionProfile = false;
-
     @Override
     public void init() {
         robot = new Robot();
         robot.init(hardwareMap, false);
 
+        fr = robot.frontRight.getCurrentPosition();
+        bl = robot.backLeft.getCurrentPosition();
+        br = robot.backRight.getCurrentPosition();
+        fl = robot.frontLeft.getCurrentPosition();
+
+        robot.leftS = new ServoProfiler(robot.leftServo);
+        robot.leftS.setConstraints(1, 1, 1);
+        robot.rightS = new ServoProfiler(robot.rightServo);
+        robot.rightS.setConstraints(1, 1, 1);
+
+        robot.leftS.setTargetPosition(0.4);
+        robot.rightS.setTargetPosition(0.4);
+
         telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
         telemetry.addData("left servo targ", robot.leftS.getTargetPosition());
-
-//        fr = robot.frontRight.getCurrentPosition();
-//        bl = robot.backLeft.getCurrentPosition();
-//        br = robot.backRight.getCurrentPosition();
-//        fl = robot.frontLeft.getCurrentPosition();
+        telemetry.addData("servo direction", robot.getDirection());
     }
 
     @Override
     public void loop() {
         compareServos();
-        if(motionProfile){
-            robot.leftS.update();
-            robot.rightS.update(robot.leftS);
-        }
+        robot.leftS.update();
+        robot.rightS.update(robot.leftS);
         telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
         telemetry.addData("left servo targ", robot.leftS.getTargetPosition());
+        telemetry.addData("left servo direction", robot.leftServo.getDirection());
+        telemetry.addData("right servo direction", robot.rightServo.getDirection());
+        telemetry.addData("servo direction", robot.getDirection());
         //intake();
         //moveServos();
-        //simplifiedDrive(2);
+        // TODO strafe not working maybe cuz of joystick vals > 1 + not power scaled, try other drive method
+        simplifiedDrive(2);
+
+//        telemetry.addData("FR pow", robot.frontRight.getPower());
+//        telemetry.addData("BR pow", robot.backRight.getPower());
+//        telemetry.addData("FL pow", robot.frontLeft.getPower());
+//        telemetry.addData("BL pow", robot.backLeft.getPower());
 
 //        telemetry.addData("front right pos", robot.frontRight.getCurrentPosition()-fr);
 //        telemetry.addData("back right pos", robot.backRight.getCurrentPosition()-br);
@@ -54,54 +70,32 @@ public class OmegaTeleop extends OpMode {
     }
 
     public void compareServos(){
-        /*
-        if(gamepad1.a){
-            robot.leftS.setTargetPosition(1);
-            robot.rightS.setTargetPosition(1);
-        }
-        if (gamepad1.b){
-            robot.leftS.setTargetPosition(0);
-            robot.rightS.setTargetPosition(0);
-        }*/
-
-        // init position, no motion profile
+        // intake position, no motion profile
         if(gamepad1.b){
-            motionProfile = false;
             robot.leftS.setTargetPosition(0);
             robot.rightS.setTargetPosition(0);
         }
 
-        // intake position, requires motion profile
+        // hold above intake
         if(gamepad1.a){
-            motionProfile = true;
-            // TODO, when moving from outtake to intake position, what pos is servo in originally? it'll technically b negative
-            if(robot.getDirection() == Robot.ServoDirection.OUTTAKE) robot.flipDirection();
-            robot.leftS.setTargetPosition(0.2);
-            robot.leftS.setTargetPosition(0.2);
+            robot.leftS.setTargetPosition(0.4);
+            robot.rightS.setTargetPosition(0.4);
+            /* moving from outtake to init
+            if(robot.leftS.getTargetPosition() == 0.8){
+                robot.leftS.setTargetPosition(0.4);
+                robot.rightS.setTargetPosition(0.4);
+            }
+            // moving from intake to init
+            else {
+                robot.leftServo.setPosition(0.4);
+                robot.rightServo.setPosition(0.4);
+            }*/
         }
 
         // outtake position, requires motion profile
         if(gamepad1.x){
-            motionProfile = true;
-            if(robot.getDirection() == Robot.ServoDirection.INTAKE) robot.flipDirection();
-            robot.leftS.setTargetPosition(0.2);
-            robot.leftS.setTargetPosition(0.2);
-        }
-    }
-
-    public void moveServos(){
-        // intake pos
-        if(gamepad1.a){
-            if(robot.getDirection() == Robot.ServoDirection.OUTTAKE) robot.flipDirection();
-            robot.setServoPos(0.2);
-        }
-        // 0 pos
-        if(gamepad1.b) robot.setServoPos(0);
-
-        // outtake pos
-        if(gamepad1.x){
-            if(robot.getDirection() == Robot.ServoDirection.INTAKE) robot.flipDirection();
-            robot.setServoPos(0.2);
+            robot.leftS.setTargetPosition(0.8);
+            robot.rightS.setTargetPosition(0.8);
         }
     }
 
@@ -126,13 +120,18 @@ public class OmegaTeleop extends OpMode {
         // moving right joystick to the right means clockwise rotation of robot
         double rotate = gamepad1.right_stick_x;
 
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio, but only when
+        // at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(vertical) + Math.abs(horizontal) + Math.abs(rotate), 1);
+
         // calculate initial power from gamepad inputs
         // to understand this, draw force vector diagrams (break into components)
         // and observe the goBILDA diagram on the GM0 page (linked above)
-        double frontLeftPower = vertical + horizontal + rotate;
-        double backLeftPower = vertical - horizontal + rotate;
-        double frontRightPower = vertical - horizontal - rotate;
-        double backRightPower = vertical + horizontal - rotate;
+        double frontLeftPower = (vertical + horizontal + rotate) / denominator;
+        double backLeftPower = (vertical - horizontal + rotate) / denominator;
+        double frontRightPower = (vertical - horizontal - rotate) / denominator;
+        double backRightPower = (vertical + horizontal - rotate) / denominator;
 
         robot.frontLeft.setPower(frontLeftPower);
         robot.frontRight.setPower(frontRightPower);
@@ -160,11 +159,6 @@ public class OmegaTeleop extends OpMode {
         double backLeftPower = vertical - horizontal + rotate;
         double frontRightPower = vertical - horizontal - rotate;
         double backRightPower = vertical + horizontal - rotate;
-
-        telemetry.addData("fl pow", frontLeftPower);
-        telemetry.addData("fr pow", frontRightPower);
-        telemetry.addData("bl pow", backLeftPower);
-        telemetry.addData("br pow", backRightPower);
 
         // if there is a power level that is out of range
         if (

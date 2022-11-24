@@ -100,6 +100,7 @@ public class ServoProfiler {
     // copies motion profile of other motor
     public ServoProfiler update(ServoProfiler copy){
         if(isAtTarget()) return this;
+
         servo.setPosition(getCurrentPosition() + copy.delta / servoRange);
         return this;
     }
