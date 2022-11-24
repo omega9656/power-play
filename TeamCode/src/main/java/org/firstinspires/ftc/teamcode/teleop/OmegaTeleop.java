@@ -89,6 +89,10 @@ public class OmegaTeleop extends OpMode {
         }
     }
 
+    public void slides(){
+
+    }
+
     public void intake(){
         if(gamepad1.right_trigger > 0.3){
             robot.intake.setVelocity(720*9, AngleUnit.DEGREES);
@@ -120,13 +124,13 @@ public class OmegaTeleop extends OpMode {
         // and observe the goBILDA diagram on the GM0 page (linked above)
         double frontLeftPower = (vertical + horizontal + rotate) / denominator;
         double backLeftPower = (vertical - horizontal + rotate) / denominator;
-        double frontRightPower = (vertical - horizontal - rotate) / denominator;
-        double backRightPower = (vertical + horizontal - rotate) / denominator;
+        double frontRightPower = (vertical + horizontal - rotate) / denominator; // - hor
+        double backRightPower = (vertical - horizontal - rotate) / denominator; // + hor
 
-        robot.frontLeft.setPower(frontLeftPower);
-        robot.frontRight.setPower(frontRightPower);
-        robot.backRight.setPower(backRightPower);
-        robot.backLeft.setPower(backLeftPower);
+        robot.frontLeft.setPower(frontLeftPower*.7);
+        robot.frontRight.setPower(frontRightPower*.7);
+        robot.backRight.setPower(backRightPower*.7);
+        robot.backLeft.setPower(backLeftPower*.7);
     }
 
     public void driveL(double strafe, DriveMode driveMode) {
