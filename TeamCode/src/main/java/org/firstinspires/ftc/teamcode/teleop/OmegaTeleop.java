@@ -38,9 +38,9 @@ public class OmegaTeleop extends OpMode {
         robot.leftS.setTargetPosition(0.4);
         robot.rightS.setTargetPosition(0.4);
 
-        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
-        telemetry.addData("left servo targ", robot.leftS.getTargetPosition());
-        telemetry.addData("servo direction", robot.getDirection());
+//        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
+//        telemetry.addData("left servo targ", robot.leftS.getTargetPosition());
+//        telemetry.addData("servo direction", robot.getDirection());
     }
 
     @Override
@@ -48,25 +48,25 @@ public class OmegaTeleop extends OpMode {
         compareServos();
         robot.leftS.update();
         robot.rightS.update(robot.leftS);
-        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
-        telemetry.addData("left servo targ", robot.leftS.getTargetPosition());
-        telemetry.addData("left servo direction", robot.leftServo.getDirection());
-        telemetry.addData("right servo direction", robot.rightServo.getDirection());
-        telemetry.addData("servo direction", robot.getDirection());
+//        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
+//        telemetry.addData("left servo targ", robot.leftS.getTargetPosition());
+//        telemetry.addData("left servo direction", robot.leftServo.getDirection());
+//        telemetry.addData("right servo direction", robot.rightServo.getDirection());
+//        telemetry.addData("servo direction", robot.getDirection());
         //intake();
         //moveServos();
         // TODO strafe not working maybe cuz of joystick vals > 1 + not power scaled, try other drive method
         simplifiedDrive(2);
 
-//        telemetry.addData("FR pow", robot.frontRight.getPower());
-//        telemetry.addData("BR pow", robot.backRight.getPower());
-//        telemetry.addData("FL pow", robot.frontLeft.getPower());
-//        telemetry.addData("BL pow", robot.backLeft.getPower());
+        telemetry.addData("FR pow", robot.frontRight.getPower());
+        telemetry.addData("BR pow", robot.backRight.getPower());
+        telemetry.addData("FL pow", robot.frontLeft.getPower());
+        telemetry.addData("BL pow", robot.backLeft.getPower());
 
-//        telemetry.addData("front right pos", robot.frontRight.getCurrentPosition()-fr);
-//        telemetry.addData("back right pos", robot.backRight.getCurrentPosition()-br);
-//        telemetry.addData("front left pos", robot.frontLeft.getCurrentPosition()-fl);
-//        telemetry.addData("back left pos", robot.backLeft.getCurrentPosition()-bl);
+        telemetry.addData("front right pos", robot.frontRight.getCurrentPosition()-fr);
+        telemetry.addData("back right pos", robot.backRight.getCurrentPosition()-br);
+        telemetry.addData("front left pos", robot.frontLeft.getCurrentPosition()-fl);
+        telemetry.addData("back left pos", robot.backLeft.getCurrentPosition()-bl);
     }
 
     public void compareServos(){
@@ -80,22 +80,12 @@ public class OmegaTeleop extends OpMode {
         if(gamepad1.a){
             robot.leftS.setTargetPosition(0.4);
             robot.rightS.setTargetPosition(0.4);
-            /* moving from outtake to init
-            if(robot.leftS.getTargetPosition() == 0.8){
-                robot.leftS.setTargetPosition(0.4);
-                robot.rightS.setTargetPosition(0.4);
-            }
-            // moving from intake to init
-            else {
-                robot.leftServo.setPosition(0.4);
-                robot.rightServo.setPosition(0.4);
-            }*/
         }
 
         // outtake position, requires motion profile
         if(gamepad1.x){
-            robot.leftS.setTargetPosition(0.8);
-            robot.rightS.setTargetPosition(0.8);
+            robot.leftS.setTargetPosition(0.85);
+            robot.rightS.setTargetPosition(0.85);
         }
     }
 
