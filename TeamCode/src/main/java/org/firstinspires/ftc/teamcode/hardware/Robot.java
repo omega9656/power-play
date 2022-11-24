@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Robot {
-    private DcMotorEx leftSlides;
-    private DcMotorEx rightSlides;
+    public DcMotorEx leftSlides;
+    public DcMotorEx rightSlides;
 
     public DcMotorEx intake;
 
@@ -72,6 +72,8 @@ public class Robot {
         leftSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //
+        leftSlides.setPower(.4);
+        rightSlides.setPower(.4);
         // sets default position
         rightSlides.setTargetPosition(0);
         leftSlides.setTargetPosition(0);

@@ -90,7 +90,10 @@ public class OmegaTeleop extends OpMode {
     }
 
     public void slides(){
-
+        if(gamepad1.dpad_up){
+            robot.leftSlides.setTargetPosition(800);
+            robot.rightSlides.setTargetPosition(800);
+        }
     }
 
     public void intake(){
