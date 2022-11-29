@@ -76,7 +76,6 @@ public class ServoProfiler {
     // fun method to update servo
     public ServoProfiler update() {
         // if at the target dont do anything
-        if (isAtTarget()) return this;
 
         // set the past delta pos
         double pastDelta = delta;
@@ -94,14 +93,16 @@ public class ServoProfiler {
                 Math.min(pastDelta + maxAccel * deltaSec, maxVel * deltaSec));
         servo.setPosition(getCurrentPosition() + delta / servoRange);
 
+        if (isAtTarget()) return this;
+
         return this;
     }
 
     // copies motion profile of other motor
     public ServoProfiler update(ServoProfiler copy){
-        if(isAtTarget()) return this;
 
         servo.setPosition(getCurrentPosition() + copy.delta / servoRange);
+        if(isAtTarget()) return this;
         return this;
     }
 

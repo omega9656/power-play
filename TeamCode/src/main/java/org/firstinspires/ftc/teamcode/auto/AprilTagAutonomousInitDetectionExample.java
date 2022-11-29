@@ -53,9 +53,10 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
     // UNITS ARE METERS
     double tagsize = 0.166;
 
-    int TAG_1 = 1; // Tag ID 18 from the 36h11 family
-    int TAG_2 = 2;
-    int TAG_3 = 3;
+    // Tag ID 1,2,3 from the 36h11 family
+    int LEFT = 1;
+    int MIDDLE = 2;
+    int RIGHT = 3;
 
     AprilTagDetection tagOfInterest = null;
 
@@ -99,18 +100,8 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
 
                 for(AprilTagDetection tag : currentDetections)
                 {
-                    if(tag.id == TAG_1)
+                    if(tag.id == LEFT || tag.id == MIDDLE || tag.id == RIGHT)
                     {
-                        tagOfInterest = tag;
-                        tagFound = true;
-                        break;
-                    }
-                    else if(tag.id == TAG_2){
-                        tagOfInterest = tag;
-                        tagFound = true;
-                        break;
-                    }
-                    else if(tag.id == TAG_3){
                         tagOfInterest = tag;
                         tagFound = true;
                         break;
@@ -119,7 +110,7 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
 
                 if(tagFound)
                 {
-                    telemetry.addLine("Found tag #" + tagOfInterest.id + "!\n\nLocation data:");
+                    telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
                     tagToTelemetry(tagOfInterest);
                 }
                 else
@@ -177,32 +168,12 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
         }
 
         /* Actually do something useful */
-        if(tagOfInterest == null)
-        {
-            /*
-             * Insert your autonomous code here, presumably running some default configuration
-             * since the tag was never sighted during INIT
-             */
-        }
-        else
-        {
-            /*
-             * Insert your autonomous code here, probably using the tag pose to decide your configuration.
-             */
-
-            // e.g.
-            if(tagOfInterest.pose.x <= 20)
-            {
-                // do something
-            }
-            else if(tagOfInterest.pose.x >= 20 && tagOfInterest.pose.x <= 50)
-            {
-                // do something else
-            }
-            else if(tagOfInterest.pose.x >= 50)
-            {
-                // do something else
-            }
+        if(tagOfInterest == null || tagOfInterest.id == LEFT){
+            //trajectory
+        }else if(tagOfInterest.id == MIDDLE){
+            //trajectory
+        }else{
+            //trajectory
         }
 
 

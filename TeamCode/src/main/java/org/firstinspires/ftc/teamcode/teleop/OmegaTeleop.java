@@ -43,33 +43,46 @@ public class OmegaTeleop extends OpMode {
 //        telemetry.addData("servo direction", robot.getDirection());
     }
 
+//    @Override
+//    public void init_loop() {
+//        robot.leftS.setTargetPosition(0.4);
+//        robot.rightS.setTargetPosition(0.4);
+//        robot.leftS.update();
+//        robot.rightS.update(robot.leftS);
+//
+//        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
+//        telemetry.addData("right servo curr", robot.rightS.getCurrentPosition());
+//        telemetry.addData("left servo target", robot.leftS.getTargetPosition());
+//        telemetry.addData("right servo target", robot.rightS.getTargetPosition());
+//    }
+
     @Override
     public void loop() {
-        compareServos();
+        moveServos();
         robot.leftS.update();
         robot.rightS.update(robot.leftS);
-//        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
-//        telemetry.addData("left servo targ", robot.leftS.getTargetPosition());
-//        telemetry.addData("left servo direction", robot.leftServo.getDirection());
-//        telemetry.addData("right servo direction", robot.rightServo.getDirection());
-//        telemetry.addData("servo direction", robot.getDirection());
+
+        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
+        telemetry.addData("right servo curr", robot.rightS.getCurrentPosition());
+        telemetry.addData("left servo target", robot.leftS.getTargetPosition());
+        telemetry.addData("right servo target", robot.rightS.getTargetPosition());
+
         //intake();
-        //moveServos();
-        // TODO strafe not working maybe cuz of joystick vals > 1 + not power scaled, try other drive method
         simplifiedDrive(2);
+        slides();
 
-        telemetry.addData("FR pow", robot.frontRight.getPower());
-        telemetry.addData("BR pow", robot.backRight.getPower());
-        telemetry.addData("FL pow", robot.frontLeft.getPower());
-        telemetry.addData("BL pow", robot.backLeft.getPower());
-
-        telemetry.addData("front right pos", robot.frontRight.getCurrentPosition()-fr);
-        telemetry.addData("back right pos", robot.backRight.getCurrentPosition()-br);
-        telemetry.addData("front left pos", robot.frontLeft.getCurrentPosition()-fl);
-        telemetry.addData("back left pos", robot.backLeft.getCurrentPosition()-bl);
+//        telemetry.addData("FR pow", robot.frontRight.getPower());
+//        telemetry.addData("BR pow", robot.backRight.getPower());
+//        telemetry.addData("FL pow", robot.frontLeft.getPower());
+//        telemetry.addData("BL pow", robot.backLeft.getPower());
+//
+//        telemetry.addData("front right pos", robot.frontRight.getCurrentPosition()-fr);
+//        telemetry.addData("back right pos", robot.backRight.getCurrentPosition()-br);
+//        telemetry.addData("front left pos", robot.frontLeft.getCurrentPosition()-fl);
+//        telemetry.addData("back left pos", robot.backLeft.getCurrentPosition()-bl);
     }
 
-    public void compareServos(){
+    public void moveServos(){
         // intake position, no motion profile
         if(gamepad1.b){
             robot.leftS.setTargetPosition(0);
@@ -84,15 +97,51 @@ public class OmegaTeleop extends OpMode {
 
         // outtake position, requires motion profile
         if(gamepad1.x){
-            robot.leftS.setTargetPosition(0.85);
-            robot.rightS.setTargetPosition(0.85);
+            robot.leftS.setTargetPosition(0.57);
+            robot.rightS.setTargetPosition(0.57);
         }
     }
 
     public void slides(){
         if(gamepad1.dpad_up){
-            robot.leftSlides.setTargetPosition(800);
-            robot.rightSlides.setTargetPosition(800);
+            robot.leftSlides.setPower(.9);
+            robot.rightSlides.setPower(.9);
+            robot.leftSlides.setTargetPosition(1570);
+            robot.rightSlides.setTargetPosition(1570);
+//            robot.leftSlides.setVelocity(360 * 5, AngleUnit.DEGREES);
+//            robot.rightSlides.setVelocity(360 * 5, AngleUnit.DEGREES);
+        }
+        else if(gamepad1.dpad_right){
+            robot.leftSlides.setPower(.9);
+            robot.rightSlides.setPower(.9);
+            robot.leftSlides.setTargetPosition(980);
+            robot.rightSlides.setTargetPosition(980);
+        }
+        else if(gamepad1.dpad_left){
+            robot.leftSlides.setPower(.9);
+            robot.rightSlides.setPower(.9);
+            robot.leftSlides.setTargetPosition(280);
+            robot.rightSlides.setTargetPosition(280);
+//            robot.leftSlides.setVelocity(-90, AngleUnit.DEGREES);
+//            robot.rightSlides.setVelocity(-90, AngleUnit.DEGREES);
+        }
+        else if(gamepad1.dpad_down){
+            robot.leftSlides.setPower(.7);
+            robot.rightSlides.setPower(.7);
+            robot.leftSlides.setTargetPosition(0);
+            robot.rightSlides.setTargetPosition(0);
+//            robot.leftSlides.setVelocity(-90, AngleUnit.DEGREES);
+//            robot.rightSlides.setVelocity(-90, AngleUnit.DEGREES);
+        }
+        else if(gamepad1.right_trigger > 0.1){
+            robot.leftSlides.setPower(.9);
+            robot.rightSlides.setPower(.9);
+            robot.leftSlides.setTargetPosition(2000);
+            robot.rightSlides.setTargetPosition(2000);
+        }
+        else {
+//            robot.leftSlides.setVelocity(0, AngleUnit.DEGREES);
+//            robot.rightSlides.setVelocity(0, AngleUnit.DEGREES);
         }
     }
 

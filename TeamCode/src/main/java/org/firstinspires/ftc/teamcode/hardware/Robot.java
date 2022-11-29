@@ -66,18 +66,20 @@ public class Robot {
         rightSlides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlides.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftSlides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//
-        leftSlides.setPower(.4);
-        rightSlides.setPower(.4);
+
+        leftSlides.setPower(.9);
+        rightSlides.setPower(.9);
         // sets default position
         rightSlides.setTargetPosition(0);
         leftSlides.setTargetPosition(0);
-//
+
 //        intake = hardwareMap.get(DcMotorEx.class, "intake");
 //        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        intake.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -89,7 +91,14 @@ public class Robot {
         rightServo.setDirection(Servo.Direction.REVERSE);
         leftServo.setDirection(Servo.Direction.FORWARD);
 
+        leftS = new ServoProfiler(leftServo);
+        rightS = new ServoProfiler(rightServo);
+
+        leftS.setConstraints(1.2, 1.2, 1);
+        rightS.setConstraints(1.2, 1.2, 1);
+
         setServoPos(0.4);
+
     }
 
     public void setServoPos(double pos){
