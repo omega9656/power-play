@@ -9,8 +9,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.hardware.ServoProfiler;
 
-@TeleOp(name="Test")
-public class OmegaTeleop extends OpMode {
+@TeleOp(name="ServoTest")
+public class ServoTest extends OpMode {
     Robot robot;
 
     enum DriveMode {
@@ -74,7 +74,7 @@ public class OmegaTeleop extends OpMode {
 
     @Override
     public void loop() {
-        //moveServos();
+        moveServos();
         robot.leftS.update();
         robot.rightS.update(robot.leftS);
         intake();
@@ -91,31 +91,31 @@ public class OmegaTeleop extends OpMode {
         telemetry.addData("right servo target", robot.rightS.getTargetPosition());
     }
 
-//    public void moveServos(){
-//        // intake position, no motion profile
-//        if(gamepad2.b){
-//            robot.leftS.setConstraints(1, 1, .75);
-//            robot.rightS.setConstraints(1, 1, .75);
-//            robot.leftS.setTargetPosition(0);
-//            robot.rightS.setTargetPosition(0);
-//        }
-//
-//        // hold above intake
-//        if(gamepad2.a){
-//            robot.leftS.setConstraints(1, 1, 1.25);
-//            robot.rightS.setConstraints(1, 1, 1.25);
-//            robot.leftS.setTargetPosition(0.4);
-//            robot.rightS.setTargetPosition(0.4);
-//        }
-//
-//        // outtake position, requires motion profile
-//        if(gamepad2.x){
-//            robot.leftS.setConstraints(1, 1, 1.25);
-//            robot.rightS.setConstraints(1, 1, 1.25);
-//            robot.leftS.setTargetPosition(.85);
-//            robot.rightS.setTargetPosition(.85);
-//        }
-//    }
+    public void moveServos(){
+        // intake position, no motion profile
+        if(gamepad2.b){
+            robot.leftS.setConstraints(1, 1, .75);
+            robot.rightS.setConstraints(1, 1, .75);
+            robot.leftS.setTargetPosition(0);
+            robot.rightS.setTargetPosition(0);
+        }
+
+        // hold above intake
+        if(gamepad2.a){
+            robot.leftS.setConstraints(1, 1, 1.25);
+            robot.rightS.setConstraints(1, 1, 1.25);
+            robot.leftS.setTargetPosition(0.4);
+            robot.rightS.setTargetPosition(0.4);
+        }
+
+        // outtake position, requires motion profile
+        if(gamepad2.x){
+            robot.leftS.setConstraints(1, 1, 1.25);
+            robot.rightS.setConstraints(1, 1, 1.25);
+            robot.leftS.setTargetPosition(.85);
+            robot.rightS.setTargetPosition(.85);
+        }
+    }
 
     public void slides(){
         if(gamepad2.dpad_up){
@@ -123,38 +123,38 @@ public class OmegaTeleop extends OpMode {
             robot.rightSlides.setPower(.9);
             robot.leftSlides.setTargetPosition(1670);
             robot.rightSlides.setTargetPosition(1670);
-            robot.leftS.setTargetPosition(0.75);
-            robot.rightS.setTargetPosition(0.75);
+//            robot.leftS.setTargetPosition(0.85);
+//            robot.rightS.setTargetPosition(0.85);
         }
         else if(gamepad2.dpad_right){
             robot.leftSlides.setPower(.9);
             robot.rightSlides.setPower(.9);
             robot.leftSlides.setTargetPosition(980);
             robot.rightSlides.setTargetPosition(980);
-            robot.leftS.setTargetPosition(0.75);
-            robot.rightS.setTargetPosition(0.75);
+//            robot.leftS.setTargetPosition(0.85);
+//            robot.rightS.setTargetPosition(0.85);
         }
         // intake position
-        else if(gamepad2.dpad_down){
-            robot.leftS.setTargetPosition(0);
-            robot.rightS.setTargetPosition(0);
+        else if(gamepad2.dpad_left){
+//            robot.leftS.setTargetPosition(0);
+//            robot.rightS.setTargetPosition(0);
             robot.leftSlides.setPower(.7);
             robot.rightSlides.setPower(.7);
             robot.leftSlides.setTargetPosition(600);
             robot.rightSlides.setTargetPosition(600);
         }
-        else if(gamepad2.x){
-            robot.leftS.setTargetPosition(0);
-            robot.rightS.setTargetPosition(0);
-            robot.leftSlides.setPower(.7);
-            robot.rightSlides.setPower(.7);
-            robot.leftSlides.setTargetPosition(280);
-            robot.rightSlides.setTargetPosition(280);
-        }
+//        else if(gamepad2.x){
+////            robot.leftS.setTargetPosition(0);
+////            robot.rightS.setTargetPosition(0);
+//            robot.leftSlides.setPower(.7);
+//            robot.rightSlides.setPower(.7);
+//            robot.leftSlides.setTargetPosition(280);
+//            robot.rightSlides.setTargetPosition(280);
+//        }
         // low junction
-        else if(gamepad2.dpad_left){
-            robot.leftS.setTargetPosition(0.75);
-            robot.rightS.setTargetPosition(0.75);
+        else if(gamepad2.dpad_down){
+//            robot.leftS.setTargetPosition(0.85);
+//            robot.rightS.setTargetPosition(0.85);
             robot.leftSlides.setPower(.7);
             robot.rightSlides.setPower(.7);
             robot.leftSlides.setTargetPosition(280);

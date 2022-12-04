@@ -9,8 +9,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.hardware.ServoProfiler;
 
-@TeleOp(name="Test")
-public class OmegaTeleop extends OpMode {
+@TeleOp
+public class TeleopAfterAuto extends OpMode {
     Robot robot;
 
     enum DriveMode {
@@ -31,7 +31,7 @@ public class OmegaTeleop extends OpMode {
         intake = false;
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         robot = new Robot();
-        robot.init(hardwareMap, false, false);
+        robot.init(hardwareMap, false, true);
 
         fr = robot.frontRight.getCurrentPosition();
         bl = robot.backLeft.getCurrentPosition();
@@ -123,16 +123,16 @@ public class OmegaTeleop extends OpMode {
             robot.rightSlides.setPower(.9);
             robot.leftSlides.setTargetPosition(1670);
             robot.rightSlides.setTargetPosition(1670);
-            robot.leftS.setTargetPosition(0.75);
-            robot.rightS.setTargetPosition(0.75);
+            robot.leftS.setTargetPosition(0.8);
+            robot.rightS.setTargetPosition(0.8);
         }
         else if(gamepad2.dpad_right){
             robot.leftSlides.setPower(.9);
             robot.rightSlides.setPower(.9);
             robot.leftSlides.setTargetPosition(980);
             robot.rightSlides.setTargetPosition(980);
-            robot.leftS.setTargetPosition(0.75);
-            robot.rightS.setTargetPosition(0.75);
+            robot.leftS.setTargetPosition(0.8);
+            robot.rightS.setTargetPosition(0.8);
         }
         // intake position
         else if(gamepad2.dpad_down){
@@ -153,8 +153,8 @@ public class OmegaTeleop extends OpMode {
         }
         // low junction
         else if(gamepad2.dpad_left){
-            robot.leftS.setTargetPosition(0.75);
-            robot.rightS.setTargetPosition(0.75);
+            robot.leftS.setTargetPosition(0.8);
+            robot.rightS.setTargetPosition(0.8);
             robot.leftSlides.setPower(.7);
             robot.rightSlides.setPower(.7);
             robot.leftSlides.setTargetPosition(280);
@@ -217,3 +217,4 @@ public class OmegaTeleop extends OpMode {
         robot.backLeft.setPower(backLeftPower*.6);
     }
 }
+

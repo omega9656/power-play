@@ -75,11 +75,11 @@ public class ServoProfiler {
 
     // fun method to update servo
     public ServoProfiler update() {
-        // if at the target dont do anything
 
-        // set the past delta pos
+        // set the past delta position
         double pastDelta = delta;
-        // get the change in time, then reset the timer instantly
+        // get the change in time from the previous change
+        // in position, then reset the timer instantly
         double deltaSec = deltaTime.seconds();
         deltaTime.reset();
 
@@ -93,6 +93,7 @@ public class ServoProfiler {
                 Math.min(pastDelta + maxAccel * deltaSec, maxVel * deltaSec));
         servo.setPosition(getCurrentPosition() + delta / servoRange);
 
+        // if the servo is at its target position, stop moving
         if (isAtTarget()) return this;
 
         return this;

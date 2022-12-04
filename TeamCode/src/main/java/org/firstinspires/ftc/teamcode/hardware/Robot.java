@@ -31,7 +31,7 @@ public class Robot {
     public ServoDirection getDirection() {return s;}
     public void setDirection(ServoDirection s) {this.s = s;}
 
-    public void init(HardwareMap hardwareMap, boolean autoRunning){
+    public void init(HardwareMap hardwareMap, boolean autoRunning, boolean afterAuto){
         s = ServoDirection.INTAKE;
 
         if (!autoRunning) {
@@ -64,15 +64,20 @@ public class Robot {
         rightSlides = hardwareMap.get(DcMotorEx.class, "right_slides");
 
         rightSlides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlides.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftSlides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        if(!afterAuto){
+            rightSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+
+
 
         leftSlides.setPower(.9);
         rightSlides.setPower(.9);
@@ -80,10 +85,11 @@ public class Robot {
         rightSlides.setTargetPosition(0);
         leftSlides.setTargetPosition(0);
 
-//        intake = hardwareMap.get(DcMotorEx.class, "intake");
-//        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        intake.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-//        intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE); // when power is 0, BRAKE
+        // TODO code intake no encoder
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
+        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //intake.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE); // when power is 0, BRAKE
 
         leftServo = hardwareMap.get(Servo.class, "left_servo");
         rightServo = hardwareMap.get(Servo.class, "right_servo");
@@ -96,8 +102,6 @@ public class Robot {
 
         leftS.setConstraints(1.2, 1.2, 1);
         rightS.setConstraints(1.2, 1.2, 1);
-
-        setServoPos(0.4);
 
     }
 
