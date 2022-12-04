@@ -76,7 +76,7 @@ public class ServoProfiler {
     // fun method to update servo
     public ServoProfiler update() {
 
-        // set the past delta position
+        // set the past change in servo position
         double pastDelta = delta;
         // get the change in time from the previous change
         // in position, then reset the timer instantly
@@ -88,14 +88,15 @@ public class ServoProfiler {
         // the min and max make sure both constraints are hit
         // the deltasec makes it independent of looptime
         delta = Range.clip(
-                deltaSec * servoRange * proportion * (getTargetPosition() - getCurrentPosition()),
+                deltaSec * servoRange * proportion *
+                        (getTargetPosition() - getCurrentPosition()),
+                //
                 Math.max(pastDelta - maxAccel * deltaSec, -maxVel * deltaSec),
                 Math.min(pastDelta + maxAccel * deltaSec, maxVel * deltaSec));
         servo.setPosition(getCurrentPosition() + delta / servoRange);
 
         // if the servo is at its target position, stop moving
         if (isAtTarget()) return this;
-
         return this;
     }
 

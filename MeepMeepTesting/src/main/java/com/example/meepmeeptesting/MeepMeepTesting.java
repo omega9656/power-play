@@ -19,9 +19,9 @@ public class MeepMeepTesting {
                 .followTrajectorySequence(drive -> // start pose
                                 drive.trajectorySequenceBuilder(new Pose2d(-35, -60, Math.toRadians(270)))
                                         // start position to drop off indicated by barcode
-                                        .back(48)
+                                        .back(25) // 48
                                         // turn and drop off cone #1
-                                        .strafeLeft(10)
+                                        .strafeLeft(25)
                                         // move to intake cone #2
                                         .lineToLinearHeading(new Pose2d(-50, -11, Math.toRadians(180)))
                                         //.lineToConstantHeading(new Vector2d(-60, -12.5))

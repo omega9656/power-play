@@ -83,6 +83,10 @@ public class OmegaTeleop extends OpMode {
 
         telemetry.addData("left slides curr", robot.leftSlides.getCurrentPosition());
         telemetry.addData("right slides curr", robot.rightSlides.getCurrentPosition());
+        telemetry.addData("left slides targ", robot.leftSlides.getTargetPosition());
+        telemetry.addData("right slides targ", robot.rightSlides.getTargetPosition());
+        telemetry.addData("left slides targ", robot.leftSlides.getVelocity(AngleUnit.DEGREES));
+        telemetry.addData("right slides targ", robot.rightSlides.getVelocity(AngleUnit.DEGREES));
 
 
         telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());

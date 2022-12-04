@@ -45,12 +45,6 @@ public class Robot {
             backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-//            backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//            frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//            backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//            frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
             backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -65,19 +59,19 @@ public class Robot {
 
         rightSlides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlides.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftSlides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        if(!afterAuto){
-            rightSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
-
-
+//        if(!afterAuto){
+//            rightSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            leftSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        }
 
         leftSlides.setPower(.9);
         rightSlides.setPower(.9);
