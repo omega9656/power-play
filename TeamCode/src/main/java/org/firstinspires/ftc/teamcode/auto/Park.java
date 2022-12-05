@@ -210,7 +210,7 @@ public class Park extends LinearOpMode
 
         // first trajectory, moves to high from wall to drop cone
         Trajectory backtoZone = drive.trajectoryBuilder(startPose)
-                .back(25)
+                .back(26)
                 .build();
 
         Trajectory left = drive.trajectoryBuilder(backtoZone.end())

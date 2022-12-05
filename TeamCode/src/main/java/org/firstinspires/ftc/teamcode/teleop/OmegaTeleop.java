@@ -78,7 +78,7 @@ public class OmegaTeleop extends OpMode {
         robot.leftS.update();
         robot.rightS.update(robot.leftS);
         intake();
-        simplifiedDrive(2, DriveMode.SQUARED);
+        simplifiedDrive(2, DriveMode.CUBED);
         slides();
 
         telemetry.addData("left slides curr", robot.leftSlides.getCurrentPosition());

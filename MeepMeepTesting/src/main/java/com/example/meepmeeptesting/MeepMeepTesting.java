@@ -17,7 +17,7 @@ public class MeepMeepTesting {
                 // Set bot constraints: maxVel, maxAnccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(48, 30, 55, Math.toRadians(60), 13)
                 .followTrajectorySequence(drive -> // start pose
-                                drive.trajectorySequenceBuilder(new Pose2d(-35, -60, Math.toRadians(270)))
+                                drive.trajectorySequenceBuilder(new Pose2d(-35, 60, Math.toRadians(270)))
                                         // start position to drop off indicated by barcode
                                         .back(25) // 48
                                         // turn and drop off cone #1

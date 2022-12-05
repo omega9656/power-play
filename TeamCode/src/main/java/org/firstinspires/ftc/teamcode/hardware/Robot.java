@@ -59,13 +59,17 @@ public class Robot {
 
         rightSlides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if(!afterAuto){
+            rightSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
         rightSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlides.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftSlides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if(!afterAuto){
+            leftSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
         leftSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 //        if(!afterAuto){

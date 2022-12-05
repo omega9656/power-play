@@ -26,7 +26,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -41,8 +40,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Disabled
-public class CycleLeftConeStackRed extends LinearOpMode
+@Autonomous(name="Right Stack")
+public class RightConeStack extends LinearOpMode
 {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -51,9 +50,11 @@ public class CycleLeftConeStackRed extends LinearOpMode
     SampleMecanumDrive drive;
     ElapsedTime slidesTime;
     ElapsedTime outTime;
+
+    ElapsedTime intakeTime;
     //Pose2d startPose = new Pose2d(-35, -62, Math.toRadians(270));
     //Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
-    Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(270));
+    Pose2d startPose = new Pose2d(-35, 60, Math.toRadians(270));
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -82,9 +83,13 @@ public class CycleLeftConeStackRed extends LinearOpMode
         WALL_TO_HIGH,
         TURN_TO_DROP_CONE,
         DROP_CONE,
+        BACK_UP_FROM_HIGH,
+        TURN_TO_CONE_STACK,
         TO_CONE_STACK,
         INTAKE,
-        TO_HIGH,
+        LIFT_INTAKE,
+        BACK_FROM_INTAKE,
+        TURN_TO_HIGH_FROM_INTAKE,
         PARK,
         IDLE
     }
@@ -98,6 +103,7 @@ public class CycleLeftConeStackRed extends LinearOpMode
 
         slidesTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         outTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        intakeTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(startPose);
@@ -236,21 +242,42 @@ public class CycleLeftConeStackRed extends LinearOpMode
 
         // first trajectory, moves to high from wall to drop cone
         Trajectory toDeposit = drive.trajectoryBuilder(startPose)
-                .back(48)
+                .back(49)
                 .build();
 
-        Trajectory dropCone = drive.trajectoryBuilder(toDeposit.end().plus(new Pose2d(0, 0, Math.toRadians(-35))))
-                .back(5)
+        Trajectory dropCone = drive.trajectoryBuilder(toDeposit.end().plus(new Pose2d(0, 0, Math.toRadians(45))))
+                .back(14) // 9.75
                 .build();
 
-        Trajectory toConeStack = drive.trajectoryBuilder(dropCone.end())
-                //.strafeRight(55)
-                .lineToLinearHeading(new Pose2d(-60, -12.5, Math.toRadians(180)))
+        Trajectory dropCone2 = drive.trajectoryBuilder(toDeposit.end().plus(new Pose2d(0, 0, Math.toRadians(45))))
+                .back(11)
                 .build();
 
-        Trajectory toHigh = drive.trajectoryBuilder(toConeStack.end())
-                .lineToConstantHeading(new Vector2d(-35, -12.5))
+        Trajectory backCone = drive.trajectoryBuilder(dropCone.end())
+                .forward(15) // 10.5
                 .build();
+
+        Trajectory toConeStack = drive.trajectoryBuilder(backCone.end().plus(new Pose2d(0, 0, Math.toRadians(45))))
+                .forward(25.5)
+                .build();
+
+        Trajectory backConeStack = drive.trajectoryBuilder(toConeStack.end())
+                .back(25.5)
+                .build();
+
+        Trajectory leftZone = drive.trajectoryBuilder(backCone.end().plus(new Pose2d(0, 0, Math.toRadians(45))))
+                .back(25)
+                .build();
+
+        Trajectory rightZone = drive.trajectoryBuilder(backCone.end().plus(new Pose2d(0, 0, Math.toRadians(45))))
+                .forward(30)
+                .build();
+
+        Trajectory middleZone = drive.trajectoryBuilder(backCone.end().plus(new Pose2d(0, 0, Math.toRadians(45))))
+                .forward(1.5)
+                .build();
+
+
 
         int cones = 0;
 
@@ -260,6 +287,7 @@ public class CycleLeftConeStackRed extends LinearOpMode
         robot.leftSlides.setTargetPosition(280);
         robot.rightSlides.setTargetPosition(280);
         // here
+        robot.intake.setPower(-0.2);
 
         State currentState = State.WALL_TO_HIGH; // trajectory 1
         drive.followTrajectoryAsync(toDeposit);
@@ -270,12 +298,11 @@ public class CycleLeftConeStackRed extends LinearOpMode
                     // checks if drive is completed finishing moving to
                     // cone and then moves
                     if(!drive.isBusy()){
-                        //currentState = State.TURN_TO_DROP_CONE;
                         currentState = State.TURN_TO_DROP_CONE;
                         //drive.followTrajectoryAsync(dropCone);
-                        drive.turnAsync(Math.toRadians(-35));
-                        slidesTime.reset();
-                        outTime.reset();
+                        drive.turnAsync(Math.toRadians(45));
+//                        slidesTime.reset();
+//                        outTime.reset();
                         robot.leftSlides.setTargetPosition(1670);
                         robot.rightSlides.setTargetPosition(1670);
                         robot.leftS.setTargetPosition(0.85);
@@ -284,8 +311,15 @@ public class CycleLeftConeStackRed extends LinearOpMode
                     break;
                 case TURN_TO_DROP_CONE:
                     if(!drive.isBusy()){
+                        slidesTime.reset();
+                        outTime.reset();
+                        if(cones == 0) {
+                            drive.followTrajectoryAsync(dropCone);
+                        }
+                        else {
+                            drive.followTrajectoryAsync(dropCone2);
+                        }
                         currentState = State.DROP_CONE;
-                        drive.followTrajectoryAsync(dropCone);
                     }
                     break;
                 case DROP_CONE:
@@ -293,60 +327,118 @@ public class CycleLeftConeStackRed extends LinearOpMode
 //                    // TODO if v4b gets to outtake before slides get to pos, add v4b timer
                     if(!drive.isBusy() && slidesTime.milliseconds() > 1000){
                         robot.intake.setPower(0.6);
-                        if(outTime.milliseconds() - 500 > 2000){
+                        if(cones == 0 && outTime.milliseconds() > 2500){
                             robot.intake.setPower(0);
-                            currentState = State.TO_CONE_STACK;
-                            robot.rightSlides.setPower(0.7);
-                            robot.leftSlides.setPower(0.7);
-                            robot.rightSlides.setTargetPosition(600);
-                            robot.leftSlides.setTargetPosition(600);
+                            currentState = State.BACK_UP_FROM_HIGH;
+                            robot.leftS.setTargetPosition(0);
+                            robot.rightS.setTargetPosition(0);
+                            cones++;
                         }
+                        else if(cones == 1 && outTime.milliseconds() > 4000){
+                            robot.intake.setPower(0);
+                            currentState = State.BACK_UP_FROM_HIGH;
+                            robot.leftS.setTargetPosition(0);
+                            robot.rightS.setTargetPosition(0);
+                            cones++;
+                        }
+                    }
+                    break;
+                case BACK_UP_FROM_HIGH:
+                    if(!drive.isBusy()){
+                        currentState = State.TURN_TO_CONE_STACK;
+                        drive.followTrajectoryAsync(backCone);
+                    }
+                    break;
+                case TURN_TO_CONE_STACK:
+                    if(!drive.isBusy()){
+                        currentState = State.TO_CONE_STACK;
+                        drive.turnAsync(Math.toRadians(45));
                     }
                     break;
                 case TO_CONE_STACK:
                     if(!drive.isBusy()){
-                        currentState = State.INTAKE;
-                        drive.followTrajectory(toConeStack);
-                        robot.leftS.setTargetPosition(0);
-                        robot.rightS.setTargetPosition(0);
+                        if(cones == 2){
+                            currentState = State.PARK;
+                        }
+                        else {
+                            currentState = State.INTAKE;
+                            robot.rightSlides.setPower(0.7);
+                            robot.leftSlides.setPower(0.7);
+                            robot.rightSlides.setTargetPosition(900);
+                            robot.leftSlides.setTargetPosition(900);
+                            drive.followTrajectoryAsync(toConeStack);
+                        }
                     }
+                    break;
                 case INTAKE:
                     if(!drive.isBusy()){
-                        currentState = State.IDLE;
-                        drive.turnAsync(Math.toRadians(-120));
+                        robot.intake.setPower(-0.8);
+                        robot.rightSlides.setPower(0.7);
+                        robot.leftSlides.setPower(0.7);
+                        robot.rightSlides.setTargetPosition(650);
+                        robot.leftSlides.setTargetPosition(650);
+                        intakeTime.reset();
+                        currentState = State.LIFT_INTAKE;
+
                     }
-//                case TURN_AND_LOWER:
-//                    if(!drive.isBusy()){
-//                        currentState = State.IDLE;
-//                        drive.followTrajectoryAsync(toConeStack);
-//                    }
-//                    break;
-//                case TO_CONE_STACK:
-//                    if(!drive.isBusy()){
-//                        currentState = State.INTAKE;
-//                        // intake cone, set timer to intake
-////                        robot.rightSlides.setPower(0.7);
-////                        robot.leftSlides.setPower(0.7);
-////                        robot.rightSlides.setTargetPosition(280);
-////                        robot.leftSlides.setTargetPosition(280);
-//                        outTime.reset();
-//                    }
-//                    break;
-//                case INTAKE:
-//                    robot.intake.setPower(-0.6);
-//                    if(outTime.milliseconds() > 250){
-//                        robot.intake.setPower(0);
-//                        if(cones >= 2){
-//                            currentState = State.IDLE;
-//                        }
-//                        else {
-//                            currentState = State.TO_HIGH;
-//                        }
-//                    }
-//                    break;
-                case IDLE:
-                    // do nothing, wait
                     break;
+                case LIFT_INTAKE:
+                    if(intakeTime.milliseconds() > 1000){
+                        robot.intake.setPower(-0.2);
+                        robot.rightSlides.setPower(0.9);
+                        robot.leftSlides.setPower(0.9);
+                        robot.rightSlides.setTargetPosition(1000);
+                        robot.leftSlides.setTargetPosition(1000);
+                        currentState = State.BACK_FROM_INTAKE;
+                    }
+                    break;
+                case BACK_FROM_INTAKE:
+                    if(intakeTime.milliseconds() > 2000){
+                        drive.followTrajectoryAsync(backConeStack);
+                        currentState = State.TURN_TO_HIGH_FROM_INTAKE;
+                    }
+                    break;
+                case TURN_TO_HIGH_FROM_INTAKE:
+                    if(!drive.isBusy()){
+                        drive.turnAsync(Math.toRadians(-45));
+                        robot.leftSlides.setTargetPosition(1670);
+                        robot.rightSlides.setTargetPosition(1670);
+                        robot.leftS.setTargetPosition(0.85);
+                        robot.rightS.setTargetPosition(0.85);
+                        currentState = State.TURN_TO_DROP_CONE;
+                    }
+                    break;
+                case PARK:
+                    if(!drive.isBusy()){
+                        if(tagOfInterest == null || tagOfInterest.id == LEFT){
+                            drive.followTrajectoryAsync(leftZone);
+                            robot.rightSlides.setPower(0.7);
+                            robot.leftSlides.setPower(0.7);
+                            robot.leftSlides.setTargetPosition(600);
+                            robot.rightSlides.setTargetPosition(600);
+                            currentState = State.IDLE;
+                        }
+                        else if(tagOfInterest.id == RIGHT){
+                            drive.followTrajectoryAsync(rightZone);
+                            robot.rightSlides.setPower(0.7);
+                            robot.leftSlides.setPower(0.7);
+                            robot.leftSlides.setTargetPosition(600);
+                            robot.rightSlides.setTargetPosition(600);
+                            currentState = State.IDLE;
+                        }
+                        else if(tagOfInterest.id == MIDDLE){
+                            drive.followTrajectoryAsync(middleZone);
+                            robot.rightSlides.setPower(0.7);
+                            robot.leftSlides.setPower(0.7);
+                            robot.leftSlides.setTargetPosition(600);
+                            robot.rightSlides.setTargetPosition(600);
+                            currentState = State.IDLE;
+                        }
+                    }
+                    break;
+                case IDLE:
+                    break;
+
             }
 
             drive.update();
