@@ -1,18 +1,17 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.hardware.RobotOld;
 import org.firstinspires.ftc.teamcode.hardware.ServoProfiler;
 
 @TeleOp(name="Test")
 public class OmegaTeleopFieldCentric extends OpMode {
-    Robot robot;
+    RobotOld robot;
 
     enum DriveMode {
         SQUARED, CUBED, NORMAL
@@ -33,7 +32,7 @@ public class OmegaTeleopFieldCentric extends OpMode {
     public void init() {
         intake = false;
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        robot = new Robot();
+        robot = new RobotOld();
 
         // Retrieve the IMU from the hardware map
         imu = hardwareMap.get(BNO055IMU.class, "imu");

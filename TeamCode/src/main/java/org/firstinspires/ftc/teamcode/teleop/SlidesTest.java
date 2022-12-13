@@ -1,22 +1,18 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.hardware.ServoProfiler;
+import org.firstinspires.ftc.teamcode.hardware.RobotOld;
 
 @Disabled
 public class SlidesTest extends OpMode {
-    Robot robot;
+    RobotOld robot;
 
     @Override
     public void init() {
-        robot = new Robot();
+        robot = new RobotOld();
         robot.init(hardwareMap, false, false);
     }
 
