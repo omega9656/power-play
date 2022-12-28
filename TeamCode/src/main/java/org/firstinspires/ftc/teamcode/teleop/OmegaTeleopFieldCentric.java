@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.hardware.ServoProfiler;
 
-@TeleOp(name="Test")
+@TeleOp(name="Field Centric")
 public class OmegaTeleopFieldCentric extends OpMode {
     Robot robot;
 
@@ -24,9 +24,7 @@ public class OmegaTeleopFieldCentric extends OpMode {
     double bl;
 
     BNO055IMU imu;
-
     ElapsedTime time;
-
     boolean intake;
 
     @Override
@@ -89,23 +87,25 @@ public class OmegaTeleopFieldCentric extends OpMode {
         robot.leftS.update();
         robot.rightS.update(robot.leftS);
         intake();
-        fieldCentricDrive();
-
-
+        fieldCentricDrive(DriveMode.CUBED);
         slides();
 
-        telemetry.addData("left slides curr", robot.leftSlides.getCurrentPosition());
-        telemetry.addData("right slides curr", robot.rightSlides.getCurrentPosition());
-        telemetry.addData("left slides targ", robot.leftSlides.getTargetPosition());
-        telemetry.addData("right slides targ", robot.rightSlides.getTargetPosition());
-        telemetry.addData("left slides targ", robot.leftSlides.getVelocity(AngleUnit.DEGREES));
-        telemetry.addData("right slides targ", robot.rightSlides.getVelocity(AngleUnit.DEGREES));
+        telemetry.addData("front left pos: ", robot.frontLeft.getCurrentPosition()-fl);
+        telemetry.addData("front right pos: ", robot.frontRight.getCurrentPosition()-fr);
+        telemetry.addData("back left pos: ", robot.backLeft.getCurrentPosition()-bl);
+        telemetry.addData("back right pos: ", robot.backRight.getCurrentPosition()-br);
 
-
-        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
-        telemetry.addData("right servo curr", robot.rightS.getCurrentPosition());
-        telemetry.addData("left servo target", robot.leftS.getTargetPosition());
-        telemetry.addData("right servo target", robot.rightS.getTargetPosition());
+//        telemetry.addData("left slides curr", robot.leftSlides.getCurrentPosition());
+//        telemetry.addData("right slides curr", robot.rightSlides.getCurrentPosition());
+//        telemetry.addData("left slides targ", robot.leftSlides.getTargetPosition());
+//        telemetry.addData("right slides targ", robot.rightSlides.getTargetPosition());
+//        telemetry.addData("left slides targ", robot.leftSlides.getVelocity(AngleUnit.DEGREES));
+//        telemetry.addData("right slides targ", robot.rightSlides.getVelocity(AngleUnit.DEGREES));
+//
+//        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
+//        telemetry.addData("right servo curr", robot.rightS.getCurrentPosition());
+//        telemetry.addData("left servo target", robot.leftS.getTargetPosition());
+//        telemetry.addData("right servo target", robot.rightS.getTargetPosition());
     }
 
     public void slides(){
@@ -166,10 +166,10 @@ public class OmegaTeleopFieldCentric extends OpMode {
         }
     }
 
-    public void fieldCentricDrive() {
+    public void fieldCentricDrive(DriveMode driveMode) {
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-        double rx = gamepad1.right_stick_x;
+        double rx = gamepad1.right_stick_x * 0.75;
 
         // Read inverse IMU heading, as the IMU heading is CW positive
         double botHeading = -imu.getAngularOrientation().firstAngle;
@@ -186,9 +186,22 @@ public class OmegaTeleopFieldCentric extends OpMode {
         double frontRightPower = (rotY - rotX - rx) / denominator;
         double backRightPower = (rotY + rotX - rx) / denominator;
 
-        robot.frontLeft.setPower(frontLeftPower);
-        robot.backLeft.setPower(backLeftPower);
-        robot.frontRight.setPower(frontRightPower);
-        robot.backRight.setPower(backRightPower);
+        if (driveMode == DriveMode.SQUARED) {
+            // need to keep the sign, so multiply by absolute value of itself
+            frontLeftPower *= Math.abs(frontLeftPower);
+            backLeftPower *= Math.abs(backLeftPower);
+            frontRightPower *= Math.abs(frontRightPower);
+            backRightPower *= Math.abs(backRightPower);
+        } else if (driveMode == DriveMode.CUBED) {
+            frontLeftPower = Math.pow(frontLeftPower, 3);
+            backLeftPower = Math.pow(backLeftPower, 3);
+            frontRightPower = Math.pow(frontRightPower, 3);
+            backRightPower = Math.pow(backRightPower, 3);
+        } // if drive mode is normal, don't do anything
+
+        robot.frontLeft.setPower(frontLeftPower * 0.6);
+        robot.backLeft.setPower(backLeftPower * 0.6);
+        robot.frontRight.setPower(frontRightPower * 0.6);
+        robot.backRight.setPower(backRightPower * 0.6);
     }
 }
