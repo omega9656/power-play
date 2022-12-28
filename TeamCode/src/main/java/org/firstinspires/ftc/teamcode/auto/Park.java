@@ -23,15 +23,13 @@ package org.firstinspires.ftc.teamcode.auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.hardware.RobotOld;
 import org.firstinspires.ftc.teamcode.hardware.ServoProfiler;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -46,7 +44,7 @@ public class Park extends LinearOpMode
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
-    Robot robot;
+    RobotOld robot;
     SampleMecanumDrive drive;
     Pose2d startPose = new Pose2d(-35, -62, Math.toRadians(270));
 
@@ -79,7 +77,7 @@ public class Park extends LinearOpMode
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
-        robot = new Robot();
+        robot = new RobotOld();
         robot.init(hardwareMap, true, false);
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(startPose);

@@ -23,7 +23,6 @@ package org.firstinspires.ftc.teamcode.auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -31,7 +30,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.hardware.RobotOld;
 import org.firstinspires.ftc.teamcode.hardware.ServoProfiler;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -46,7 +45,7 @@ public class RightConeStack extends LinearOpMode
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
-    Robot robot;
+    RobotOld robot;
     SampleMecanumDrive drive;
     ElapsedTime slidesTime;
     ElapsedTime outTime;
@@ -107,7 +106,7 @@ public class RightConeStack extends LinearOpMode
 
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(startPose);
-        robot = new Robot();
+        robot = new RobotOld();
         robot.init(hardwareMap, true, false);
 
         robot.leftS = new ServoProfiler(robot.leftServo);
