@@ -185,7 +185,7 @@ public class OmegaTeleop extends OpMode {
         double horizontal = gamepad1.left_stick_x * strafe;  // counteract imperfect strafing by multiplying by constant
 
         // moving right joystick to the right means clockwise rotation of robot
-        double rotate = gamepad1.right_stick_x * 0.75;
+        double rotate = gamepad1.right_stick_x; // used to b * 0.75 to make turning slower
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when

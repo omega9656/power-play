@@ -13,20 +13,21 @@ public class Intake {
         OUT(-0.6), // deposit the cone
         STOP(0);
 
-        double power;
+        public double power;
 
         Mode(double power) {
-            power = this.power;
+            this.power = power;
         }
     }
 
     public Intake(DeviceManager deviceManager) {
         motor = deviceManager.intake;
 
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE); // when power is 0, BRAKE
 
         state = Mode.STOP;
+        stop();
     }
 
     public void run(Mode mode) {
@@ -45,4 +46,6 @@ public class Intake {
     public void out() {
         run(Mode.OUT);
     }
+
+    public void stop() {run(Mode.STOP);}
 }

@@ -15,7 +15,7 @@ public class Arm {
         DEPOSIT(0.75);
 
         // this is a value from 0 to 1
-        double pos;
+        public double pos;
 
         Position (double servoPos) {
             pos = servoPos;
@@ -23,18 +23,6 @@ public class Arm {
     }
 
     public Position armPosition;
-
-    public void setArmPosition(Position pos) {
-        armPosition = pos;
-    }
-
-    public void down() {
-        setArmPosition(Position.INTAKE);
-    }
-
-    public void up() {
-        setArmPosition(Position.DEPOSIT);
-    }
 
     public Arm(DeviceManager deviceManager) {
         leftServo = deviceManager.leftServo;
@@ -48,6 +36,27 @@ public class Arm {
 
         leftServoProfile.setConstraints(1.2, 1.2, 1);
         rightServoProfile.setConstraints(1.2, 1.2, 1);
+
+        armPosition = Position.INIT;
+        init();
+    }
+
+    public void setArmPosition(Position pos) {
+        armPosition = pos;
+        leftServoProfile.setTargetPosition(pos.pos);
+        rightServoProfile.setTargetPosition(pos.pos);
+    }
+
+    public void intake() {
+        setArmPosition(Position.INTAKE);
+    }
+
+    public void init() {
+        setArmPosition(Position.INIT);
+    }
+
+    public void deposit() {
+        setArmPosition(Position.DEPOSIT);
     }
 
 

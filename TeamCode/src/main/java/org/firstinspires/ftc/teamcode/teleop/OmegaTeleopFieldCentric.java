@@ -168,7 +168,7 @@ public class OmegaTeleopFieldCentric extends OpMode {
     public void fieldCentricDrive(DriveMode driveMode) {
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-        double rx = gamepad1.right_stick_x * 0.75; // makes turning slower
+        double rx = gamepad1.right_stick_x; // used to b * 0.75 to make turning slower
 
         // Read inverse IMU heading, as the IMU heading is CW positive
         double botHeading = -imu.getAngularOrientation().firstAngle;
