@@ -8,15 +8,15 @@ public class Slides {
     DcMotorEx leftSlides;
     DcMotorEx rightSlides;
 
-    State slidesPos;
+    public State slidesPos;
 
-    final double SLIDES_POWER = 0.9;
+    final double SLIDES_POWER = 0.8;
 
     enum State {
         HIGH(1670),
         MID(980),
         READY(600),
-        LOW_AND_INTAKE(280),
+        LOW_AND_INTAKE(230),
         INIT(0);
         // the slides will never run to 0 position in opmode
 
@@ -43,6 +43,9 @@ public class Slides {
             leftSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
+
+        leftSlides.setTargetPosition(0);
+        rightSlides.setTargetPosition(0);
 
         rightSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlides.setDirection(DcMotorSimple.Direction.REVERSE);
