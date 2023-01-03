@@ -14,7 +14,8 @@ public class OmegaTeleopModular extends OpMode {
     ElapsedTime time;
     BNO055IMU imu;
 
-    boolean fieldCentric;
+    boolean fieldCentric = true;
+    boolean slidesProfile = false;
 
     @Override
     public void init() {
@@ -32,16 +33,12 @@ public class OmegaTeleopModular extends OpMode {
         // Without this, data retrieving from the IMU throws an exception
         imu.initialize(parameters);
 
-        fieldCentric = true;
-
-        robot.arm.init();
+        // TODO uncomment if arm not initting
+        //robot.arm.init();
     }
 
     @Override
     public void init_loop() {
-//        if(gamepad1.a){
-//            fieldCentric = !fieldCentric;
-//        }
 
         robot.arm.leftServoProfile.update();
         robot.arm.rightServoProfile.update();
@@ -62,6 +59,10 @@ public class OmegaTeleopModular extends OpMode {
         robot.arm.leftServoProfile.update();
         robot.arm.rightServoProfile.update();
 
+        if(slidesProfile) {
+            robot.slides.rightSlidesProfile.update();
+            robot.slides.leftSlidesProfile.update();
+        }
         deposit();
         intake();
 
@@ -108,6 +109,46 @@ public class OmegaTeleopModular extends OpMode {
         }
     }
 
+    public void fieldCentricDrive(OmegaTeleopFieldCentric.DriveMode driveMode) {
+        double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+        double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+        double rx = gamepad1.right_stick_x ; //  * 0.75
+
+        // Read inverse IMU heading, as the IMU heading is CW positive
+        double offset = Math.toRadians(90); // degrees
+        double botHeading = -(imu.getAngularOrientation().firstAngle + offset);
+
+        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio, but only when
+        // at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        double frontLeftPower = (rotY + rotX + rx) / denominator;
+        double backLeftPower = (rotY - rotX + rx) / denominator;
+        double frontRightPower = (rotY - rotX - rx) / denominator;
+        double backRightPower = (rotY + rotX - rx) / denominator;
+
+        if (driveMode == OmegaTeleopFieldCentric.DriveMode.SQUARED) {
+            // need to keep the sign, so multiply by absolute value of itself
+            frontLeftPower *= Math.abs(frontLeftPower);
+            backLeftPower *= Math.abs(backLeftPower);
+            frontRightPower *= Math.abs(frontRightPower);
+            backRightPower *= Math.abs(backRightPower);
+        } else if (driveMode == OmegaTeleopFieldCentric.DriveMode.CUBED) {
+            frontLeftPower = Math.pow(frontLeftPower, 3);
+            backLeftPower = Math.pow(backLeftPower, 3);
+            frontRightPower = Math.pow(frontRightPower, 3);
+            backRightPower = Math.pow(backRightPower, 3);
+        } // if drive mode is normal, don't do anything
+
+        robot.drivetrain.frontLeft.setPower(frontLeftPower * 0.6);
+        robot.drivetrain.backLeft.setPower(backLeftPower * 0.6);
+        robot.drivetrain.frontRight.setPower(frontRightPower * 0.6);
+        robot.drivetrain.backRight.setPower(backRightPower * 0.6);
+    }
+
     public void drive(double strafe, OmegaTeleop.DriveMode driveMode){
         double vertical = -gamepad1.left_stick_y;  // flip sign because y axis is reversed on joystick
 
@@ -148,45 +189,5 @@ public class OmegaTeleopModular extends OpMode {
         robot.drivetrain.frontRight.setPower(frontRightPower*.6);
         robot.drivetrain.backRight.setPower(backRightPower*.6);
         robot.drivetrain.backLeft.setPower(backLeftPower*.6);
-    }
-
-    public void fieldCentricDrive(OmegaTeleopFieldCentric.DriveMode driveMode) {
-        double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-        double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-        double rx = gamepad1.right_stick_x ; //  * 0.75
-
-        // Read inverse IMU heading, as the IMU heading is CW positive
-        double offset = Math.toRadians(90); // degrees
-        double botHeading = -(imu.getAngularOrientation().firstAngle + offset);
-
-        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
-        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
-
-        // Denominator is the largest motor power (absolute value) or 1
-        // This ensures all the powers maintain the same ratio, but only when
-        // at least one is out of the range [-1, 1]
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = (rotY + rotX + rx) / denominator;
-        double backLeftPower = (rotY - rotX + rx) / denominator;
-        double frontRightPower = (rotY - rotX - rx) / denominator;
-        double backRightPower = (rotY + rotX - rx) / denominator;
-
-        if (driveMode == OmegaTeleopFieldCentric.DriveMode.SQUARED) {
-            // need to keep the sign, so multiply by absolute value of itself
-            frontLeftPower *= Math.abs(frontLeftPower);
-            backLeftPower *= Math.abs(backLeftPower);
-            frontRightPower *= Math.abs(frontRightPower);
-            backRightPower *= Math.abs(backRightPower);
-        } else if (driveMode == OmegaTeleopFieldCentric.DriveMode.CUBED) {
-            frontLeftPower = Math.pow(frontLeftPower, 3);
-            backLeftPower = Math.pow(backLeftPower, 3);
-            frontRightPower = Math.pow(frontRightPower, 3);
-            backRightPower = Math.pow(backRightPower, 3);
-        } // if drive mode is normal, don't do anything
-
-        robot.drivetrain.frontLeft.setPower(frontLeftPower * 0.6);
-        robot.drivetrain.backLeft.setPower(backLeftPower * 0.6);
-        robot.drivetrain.frontRight.setPower(frontRightPower * 0.6);
-        robot.drivetrain.backRight.setPower(backRightPower * 0.6);
     }
 }

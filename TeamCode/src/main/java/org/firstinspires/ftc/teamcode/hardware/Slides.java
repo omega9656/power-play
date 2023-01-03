@@ -3,22 +3,19 @@ package org.firstinspires.ftc.teamcode.hardware;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-
 
 
 public class Slides {
-    DcMotorEx leftSlides;
-    DcMotorEx rightSlides;
+    public DcMotorEx leftSlides;
+    public DcMotorEx rightSlides;
 
-    DcMotorProfiler leftMotorProfile;
-    DcMotorProfiler rightMotorProfile;
+    public DcMotorProfiler leftSlidesProfile;
+    public DcMotorProfiler rightSlidesProfile;
 
     State slidesPos;
 
-    final double SLIDES_POWER = 0.9;
+    // minimum power to hold slides
+    final double SLIDES_POWER = 0.1;
 
     enum State {
         HIGH(1670),
@@ -52,27 +49,35 @@ public class Slides {
             rightSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
-        rightSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightSlides.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        leftSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         leftSlides.setPower(SLIDES_POWER);
         rightSlides.setPower(SLIDES_POWER);
 
-        leftMotorProfile = new DcMotorProfiler(leftSlides);
-        rightMotorProfile = new DcMotorProfiler(rightSlides);
+        leftSlides.setTargetPosition(0);
+        rightSlides.setTargetPosition(0);
 
-        leftMotorProfile.setConstraints(1.2, 1.2);
-        rightMotorProfile.setConstraints(1.2, 1.2);
+        rightSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlides.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftSlidesProfile = new DcMotorProfiler(leftSlides);
+        rightSlidesProfile = new DcMotorProfiler(rightSlides);
+
+        // vel in proportion of max, accel in radians
+        leftSlidesProfile.setConstraints(0.7, 5);
+        rightSlidesProfile.setConstraints(0.7, 5);
 
         init();
     }
 
     public void run(State s){
         slidesPos = s;
-        leftSlides.setTargetPosition(s.pos);
-        rightSlides.setTargetPosition(s.pos);
+
+        // TODO uncomment to use no profile
+//        leftSlides.setTargetPosition(s.pos);
+//        rightSlides.setTargetPosition(s.pos);
+
+        leftSlidesProfile.setTargetPosition(s.pos);
+        rightSlidesProfile.setTargetPosition(s.pos);
     }
 
     public void init() {
