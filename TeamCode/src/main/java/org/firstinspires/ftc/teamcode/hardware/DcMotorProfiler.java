@@ -3,20 +3,28 @@ package org.firstinspires.ftc.teamcode.hardware;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 public class DcMotorProfiler {
     private final DcMotorEx motor;
     private double maxVel, maxAccel, targetPosition, targetTolerance;
     private final ElapsedTime deltaTime;
-    private double delta;
+    private double outputVelocity;
+
+    // https://www.gobilda.com/content/spec_sheets/5204-8002-0014_spec_sheet.pdf
+    public final double TICKS_PER_REVOLUTION = 384.5;  // encoder countable events per revolution (output shaft)
+    public final int MAX_RPM = 435;  // *no-load* speed @ 12VDC
+    public final double MAX_TICKS_PER_SEC = MAX_RPM * TICKS_PER_REVOLUTION / 60;  // 2787 ticks/sec
+    public final double MAX_RADIANS_PER_SEC = ticksToRadians(MAX_TICKS_PER_SEC); // 45.55 rad/sec
 
     public static class Constraints {
 
-        public double maxVelocity, maxAcceleration, proportion;
+        // max velocity is proportion of max rad/sec
+        public double maxVelocity, maxAcceleration;
 
-        public Constraints(double vel, double accel, double prop) {
+        public Constraints(double vel, double accel) {
             maxVelocity = vel;
             maxAcceleration = accel;
-            proportion = prop;
         }
 
         public double getMaxVelocity() {
@@ -26,23 +34,18 @@ public class DcMotorProfiler {
         public double getMaxAcceleration() {
             return maxAcceleration;
         }
-
-        public double getProportion() {
-            return proportion;
-        }
     }
 
     public DcMotorProfiler(DcMotorEx m) {
         motor = m;
-        setTargetTolerance(0.01);
+        // tolerance seems high but this number is in ticks
+        setTargetTolerance(2);
         deltaTime = new ElapsedTime();
-        delta = 0;
     }
 
     public void setConstraints(double vel, double accel) {
-        maxVel = vel;
+        maxVel = vel * MAX_RADIANS_PER_SEC;
         maxAccel = accel;
-//        proportion = prop;
     }
 
     public void setConstraints(Constraints c) {
@@ -53,58 +56,52 @@ public class DcMotorProfiler {
         targetPosition = target;
         deltaTime.reset();
     }
-
-//    public void translateTargetPosition(double translation) {
-//        setTargetPosition(Range.clip(0, targetPosition + translation, 1));
-//    }
-
     public void setTargetTolerance(double tolerance) {
         targetTolerance = tolerance;
     }
 
     // fun method to update servo
     public void update() {
-        double velocity = motor.getVelocity();
-
-        // set the past change in servo position
-        double pastDelta = delta;
+        double velocity = motor.getVelocity(AngleUnit.RADIANS);
         // get the change in time from the previous change
-        // in position, then reset the timer instantly
+        // in velocity
         double deltaSec = deltaTime.seconds();
-        deltaTime.reset();
 
         double directionMultiplier = 1;
 
-        double positionError = targetPosition - getCurrentPosition();
+        // in radians
+        double positionError = ticksToRadians(targetPosition - getCurrentPosition());
 
-        if (positionError < 0)
+        if (positionError < 0){
             directionMultiplier = -1;
-
-        double outputVelocity;
-//        double outputAcceleration;
+        }
 
         if (maxVel > Math.abs(velocity)) {
-            outputVelocity = velocity + directionMultiplier * maxAccel * (deltaSec - pastDelta);
-//            outputAcceleration = maxAccel;
+            outputVelocity = velocity + (directionMultiplier * maxAccel * deltaSec);
         } else {
             outputVelocity = maxVel;
-//            outputAcceleration = 0;
         }
 
         if (positionError <= (Math.pow(outputVelocity, 2) / (2 * maxAccel))) {
-            outputVelocity = velocity - directionMultiplier * maxAccel * (deltaSec - pastDelta);
-//            outputAcceleration = -maxAccel;
+            outputVelocity = velocity - (directionMultiplier * maxAccel * deltaSec);
         }
 
-        if (isAtTarget())
+        if (isAtTarget()) {
             return;
+        }
 
-        motor.setVelocity(outputVelocity);
+        motor.setVelocity(outputVelocity, AngleUnit.RADIANS);
+        deltaTime.reset();
+    }
+
+    public void update(DcMotorProfiler copy){
+        motor.setVelocity(copy.outputVelocity, AngleUnit.RADIANS);
+        if(isAtTarget()) return;
     }
 
 
     public boolean isAtTarget() {
-        return Math.abs(getCurrentPosition() - getTargetPosition()) < targetTolerance;
+        return Math.abs(getCurrentPosition() - getTargetPosition()) <= targetTolerance;
     }
 
     public double getCurrentPosition() {
@@ -130,4 +127,6 @@ public class DcMotorProfiler {
     public double getTargetTolerance() {
         return targetTolerance;
     }
+
+    public double ticksToRadians(double ticks) {return 2 * Math.PI * ticks / TICKS_PER_REVOLUTION;}
 }
