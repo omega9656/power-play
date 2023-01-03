@@ -3,10 +3,18 @@ package org.firstinspires.ftc.teamcode.hardware;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+
 
 public class Slides {
     DcMotorEx leftSlides;
     DcMotorEx rightSlides;
+
+    DcMotorProfiler leftMotorProfile;
+    DcMotorProfiler rightMotorProfile;
 
     State slidesPos;
 
@@ -22,7 +30,7 @@ public class Slides {
 
         public int pos;
 
-        State(int pos) {this.pos = pos; }
+        State(int pos) { this.pos = pos; }
 
     }
 
@@ -52,13 +60,23 @@ public class Slides {
         leftSlides.setPower(SLIDES_POWER);
         rightSlides.setPower(SLIDES_POWER);
 
-        slidesPos = State.INIT;
+        leftMotorProfile = new DcMotorProfiler(leftSlides);
+        rightMotorProfile = new DcMotorProfiler(rightSlides);
+
+        leftMotorProfile.setConstraints(1.2, 1.2);
+        rightMotorProfile.setConstraints(1.2, 1.2);
+
+        init();
     }
 
     public void run(State s){
         slidesPos = s;
         leftSlides.setTargetPosition(s.pos);
         rightSlides.setTargetPosition(s.pos);
+    }
+
+    public void init() {
+        run(State.INIT);
     }
 
     public void high(){
