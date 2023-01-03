@@ -38,6 +38,7 @@ public class Arm {
         rightServoProfile.setConstraints(1.2, 1.2, 1);
 
         armPosition = Position.INIT;
+
         init();
     }
 

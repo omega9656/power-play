@@ -8,9 +8,9 @@ public class Intake {
     public Mode state;
 
     public enum Mode {
-        IN(0.6),   // intake the cone
-        HOLD(0.1), // hold cone in place when moving
-        OUT(-0.6), // deposit the cone
+        IN(-0.6),   // intake the cone
+        HOLD(-0.3), // hold cone in place when moving
+        OUT(0.6), // deposit the cone
         STOP(0);
 
         public double power;

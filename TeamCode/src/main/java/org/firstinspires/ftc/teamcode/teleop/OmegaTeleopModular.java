@@ -19,7 +19,7 @@ public class OmegaTeleopModular extends OpMode {
     @Override
     public void init() {
         robot = new Robot(hardwareMap);
-        robot.init(false, true);
+        robot.init(false, false);
 
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
@@ -32,14 +32,19 @@ public class OmegaTeleopModular extends OpMode {
         // Without this, data retrieving from the IMU throws an exception
         imu.initialize(parameters);
 
-        fieldCentric = false;
+        fieldCentric = true;
+
+        robot.arm.init();
     }
 
     @Override
     public void init_loop() {
-        if(gamepad1.a){
-            fieldCentric = !fieldCentric;
-        }
+//        if(gamepad1.a){
+//            fieldCentric = !fieldCentric;
+//        }
+
+        robot.arm.leftServoProfile.update();
+        robot.arm.rightServoProfile.update();
 
         telemetry.addData("field centric: ", fieldCentric);
         telemetry.update();
@@ -53,6 +58,9 @@ public class OmegaTeleopModular extends OpMode {
         else {
             drive(2, OmegaTeleop.DriveMode.CUBED);
         }
+
+        robot.arm.leftServoProfile.update();
+        robot.arm.rightServoProfile.update();
 
         deposit();
         intake();
@@ -96,7 +104,7 @@ public class OmegaTeleopModular extends OpMode {
         }
         // out
         if(gamepad2.left_trigger > 0.3){
-            robot.intake.stop();
+            robot.intake.out();
         }
     }
 
@@ -107,7 +115,7 @@ public class OmegaTeleopModular extends OpMode {
         double horizontal = gamepad1.left_stick_x * strafe;  // counteract imperfect strafing by multiplying by constant
 
         // moving right joystick to the right means clockwise rotation of robot
-        double rotate = gamepad1.right_stick_x * 0.75;
+        double rotate = gamepad1.right_stick_x; //  * 0.75
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when
@@ -145,10 +153,11 @@ public class OmegaTeleopModular extends OpMode {
     public void fieldCentricDrive(OmegaTeleopFieldCentric.DriveMode driveMode) {
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-        double rx = gamepad1.right_stick_x * 0.75; // makes turning slower
+        double rx = gamepad1.right_stick_x ; //  * 0.75
 
         // Read inverse IMU heading, as the IMU heading is CW positive
-        double botHeading = -imu.getAngularOrientation().firstAngle;
+        double offset = Math.toRadians(90); // degrees
+        double botHeading = -(imu.getAngularOrientation().firstAngle + offset);
 
         double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
         double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
