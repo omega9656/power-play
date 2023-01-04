@@ -10,9 +10,9 @@ public class Arm {
     public ServoProfiler rightServoProfile;
 
     public enum Position {
-        INIT(0.5),
+        INIT(0.6), // was .5
         INTAKE(0),
-        DEPOSIT(0.75);
+        DEPOSIT(0.85); // was .75
 
         // this is a value from 0 to 1
         public double pos;
@@ -36,6 +36,9 @@ public class Arm {
 
         leftServoProfile.setConstraints(1.2, 1.2, 1);
         rightServoProfile.setConstraints(1.2, 1.2, 1);
+
+        leftServo.setPosition(0);
+        rightServo.setPosition(0);
 
         armPosition = Position.INIT;
 

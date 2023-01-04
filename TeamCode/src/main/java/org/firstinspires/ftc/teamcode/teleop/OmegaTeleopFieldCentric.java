@@ -54,13 +54,12 @@ public class OmegaTeleopFieldCentric extends OpMode {
 
         robot.setServoPos(0);
 
-        robot.leftS.setTargetPosition(0.5);
-        robot.rightS.setTargetPosition(0.5);
+        robot.leftS.setTargetPosition(0.45);
+        robot.rightS.setTargetPosition(0.45);
 
-
-//        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
-//        telemetry.addData("left servo targ", robot.leftS.getTargetPosition());
-//        telemetry.addData("servo direction", robot.getDirection());
+        telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
+        telemetry.addData("left servo targ", robot.leftS.getTargetPosition());
+        telemetry.addData("servo direction", robot.getDirection());
     }
 
     @Override
@@ -113,16 +112,16 @@ public class OmegaTeleopFieldCentric extends OpMode {
             robot.rightSlides.setPower(.9);
             robot.leftSlides.setTargetPosition(1670);
             robot.rightSlides.setTargetPosition(1670);
-            robot.leftS.setTargetPosition(0.75);
-            robot.rightS.setTargetPosition(0.75);
+            robot.leftS.setTargetPosition(0.65);
+            robot.rightS.setTargetPosition(0.65);
         }
         else if(gamepad2.dpad_right){
             robot.leftSlides.setPower(.9);
             robot.rightSlides.setPower(.9);
             robot.leftSlides.setTargetPosition(980);
             robot.rightSlides.setTargetPosition(980);
-            robot.leftS.setTargetPosition(0.75);
-            robot.rightS.setTargetPosition(0.75);
+            robot.leftS.setTargetPosition(0.65);
+            robot.rightS.setTargetPosition(0.65);
         }
         // intake position
         else if(gamepad2.dpad_down){
@@ -138,17 +137,17 @@ public class OmegaTeleopFieldCentric extends OpMode {
             robot.rightS.setTargetPosition(0);
             robot.leftSlides.setPower(.7);
             robot.rightSlides.setPower(.7);
-            robot.leftSlides.setTargetPosition(280);
-            robot.rightSlides.setTargetPosition(280);
+            robot.leftSlides.setTargetPosition(200);
+            robot.rightSlides.setTargetPosition(200);
         }
         // low junction
         else if(gamepad2.dpad_left){
-            robot.leftS.setTargetPosition(0.75);
-            robot.rightS.setTargetPosition(0.75);
+            robot.leftS.setTargetPosition(0.65);
+            robot.rightS.setTargetPosition(0.65);
             robot.leftSlides.setPower(.7);
             robot.rightSlides.setPower(.7);
-            robot.leftSlides.setTargetPosition(280);
-            robot.rightSlides.setTargetPosition(280);
+            robot.leftSlides.setTargetPosition(250);
+            robot.rightSlides.setTargetPosition(250);
         }
 
     }

@@ -12,12 +12,12 @@ public class Slides {
     public DcMotorProfiler leftSlidesProfile;
     public DcMotorProfiler rightSlidesProfile;
 
-    State slidesPos;
+    public State slidesPos;
 
     // minimum power to hold slides
-    final double SLIDES_POWER = 0.1;
+    final double SLIDES_POWER = 0;
 
-    enum State {
+    public enum State {
         HIGH(1670),
         MID(980),
         READY(600),
@@ -63,8 +63,11 @@ public class Slides {
         rightSlidesProfile = new DcMotorProfiler(rightSlides);
 
         // vel in proportion of max, accel in radians
-        leftSlidesProfile.setConstraints(0.7, 5);
-        rightSlidesProfile.setConstraints(0.7, 5);
+        leftSlidesProfile.setConstraints(0.6, 10);
+        rightSlidesProfile.setConstraints(0.6, 10);
+
+//        rightSlidesProfile.setTargetPosition(0);
+//        leftSlidesProfile.setTargetPosition(0);
 
         init();
     }
@@ -73,11 +76,11 @@ public class Slides {
         slidesPos = s;
 
         // TODO uncomment to use no profile
-//        leftSlides.setTargetPosition(s.pos);
-//        rightSlides.setTargetPosition(s.pos);
+        leftSlides.setTargetPosition(s.pos);
+        rightSlides.setTargetPosition(s.pos);
 
-        leftSlidesProfile.setTargetPosition(s.pos);
-        rightSlidesProfile.setTargetPosition(s.pos);
+//        leftSlidesProfile.setTargetPosition(s.pos);
+//        rightSlidesProfile.setTargetPosition(s.pos);
     }
 
     public void init() {
@@ -99,4 +102,6 @@ public class Slides {
     public void lowAndIntake(){
         run(State.LOW_AND_INTAKE);
     }
+
+    public int getCurrentPosition() {return rightSlides.getCurrentPosition();}
 }

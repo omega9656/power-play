@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -9,7 +10,7 @@ public class DcMotorProfiler {
     private final DcMotorEx motor;
     private double maxVel, maxAccel, targetPosition, targetTolerance;
     private final ElapsedTime deltaTime;
-    private double outputVelocity;
+    public double outputVelocity;
 
     // https://www.gobilda.com/content/spec_sheets/5204-8002-0014_spec_sheet.pdf
     public final double TICKS_PER_REVOLUTION = 384.5;  // encoder countable events per revolution (output shaft)
@@ -52,8 +53,9 @@ public class DcMotorProfiler {
         setConstraints(c.maxVelocity, c.maxAcceleration);
     }
 
-    public void setTargetPosition(double target) {
+    public void setTargetPosition(int target) {
         targetPosition = target;
+        motor.setTargetPosition(target);
         deltaTime.reset();
     }
     public void setTargetTolerance(double tolerance) {
@@ -82,11 +84,13 @@ public class DcMotorProfiler {
             outputVelocity = maxVel;
         }
 
-        if (positionError <= (Math.pow(outputVelocity, 2) / (2 * maxAccel))) {
+        if (Math.abs(positionError) <= (Math.pow(outputVelocity, 2) / (2 * maxAccel))) {
             outputVelocity = velocity - (directionMultiplier * maxAccel * deltaSec);
         }
 
         if (isAtTarget()) {
+            outputVelocity = 0;
+            motor.setVelocity(outputVelocity);
             return;
         }
 
@@ -95,8 +99,43 @@ public class DcMotorProfiler {
     }
 
     public void update(DcMotorProfiler copy){
-        motor.setVelocity(copy.outputVelocity, AngleUnit.RADIANS);
+        outputVelocity = copy.outputVelocity;
+        motor.setVelocity(outputVelocity, AngleUnit.RADIANS);
         if(isAtTarget()) return;
+    }
+
+    // returns power
+    public double motionProfile(double curr_dt, double distance, double maxVelocity){
+        double acc_dt = maxVelocity / maxAccel;
+
+        double halfway_distance = distance/2;
+        double accel_distance = 0.5 * maxAccel * Math.pow(acc_dt, 2);
+
+        if(accel_distance > halfway_distance){
+            acc_dt = Math.sqrt(halfway_distance / (0.5 * maxAccel));
+        }
+        accel_distance = 0.5 * maxAccel * Math.pow(acc_dt, 2);
+
+        maxVelocity = maxAccel * acc_dt;
+
+        double cruiseDistance = distance - (2 * accel_distance);
+        double cruise_dt = cruiseDistance / maxVelocity;
+        double deaccel_time = acc_dt + cruise_dt;
+
+        double total_dt = acc_dt + cruise_dt + deaccel_time;
+        if(curr_dt > total_dt) return distance;
+
+        if(curr_dt < acc_dt) return 0.5 * maxAccel * Math.pow(curr_dt, 2);
+        else if(curr_dt < deaccel_time) {
+            accel_distance = 0.5 * maxAccel * Math.pow(acc_dt, 2);
+            return accel_distance + (maxVelocity * (curr_dt-acc_dt));
+        }
+
+        accel_distance = 0.5 * maxAccel * Math.pow(acc_dt, 2);
+        cruiseDistance = maxVelocity * cruise_dt;
+        deaccel_time = curr_dt - deaccel_time;
+
+        return accel_distance * cruiseDistance * maxVelocity * deaccel_time - 0.5 * maxAccel * Math.pow(deaccel_time, 2);
     }
 
 

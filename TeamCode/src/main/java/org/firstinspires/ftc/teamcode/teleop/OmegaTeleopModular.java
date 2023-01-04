@@ -32,9 +32,7 @@ public class OmegaTeleopModular extends OpMode {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         // Without this, data retrieving from the IMU throws an exception
         imu.initialize(parameters);
-
-        // TODO uncomment if arm not initting
-        //robot.arm.init();
+        robot.arm.init();
     }
 
     @Override
@@ -43,7 +41,9 @@ public class OmegaTeleopModular extends OpMode {
         robot.arm.leftServoProfile.update();
         robot.arm.rightServoProfile.update();
 
-        telemetry.addData("field centric: ", fieldCentric);
+        telemetry.addData("left servo pos: ", robot.arm.leftServoProfile.getCurrentPosition());
+        telemetry.addData("left servo targ: ", robot.arm.leftServoProfile.getTargetPosition());
+
         telemetry.update();
     }
 

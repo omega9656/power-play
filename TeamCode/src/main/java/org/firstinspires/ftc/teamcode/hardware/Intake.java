@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 public class Intake {
-    public DcMotorEx motor;
+    private DcMotorEx motor;
     public Mode state;
 
     public enum Mode {
@@ -30,7 +30,7 @@ public class Intake {
         stop();
     }
 
-    public void run(Mode mode) {
+    private void run(Mode mode) {
         motor.setPower(mode.power);
         state = mode;
     }
