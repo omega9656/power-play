@@ -63,5 +63,10 @@ public class Arm {
         setArmPosition(Position.DEPOSIT);
     }
 
+    public void update() {
+        leftServoProfile.update();
+        rightServoProfile.update(leftServoProfile);
+    }
+
 
 }

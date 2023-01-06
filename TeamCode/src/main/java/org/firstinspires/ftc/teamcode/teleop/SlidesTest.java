@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.hardware.RobotOld;
 
 @TeleOp
 public class SlidesTest extends OpMode {
@@ -34,15 +32,18 @@ public class SlidesTest extends OpMode {
     public void loop() {
         slides();
 
-        double kP = 0.3;
+//        double kP = 0.3;
+//
+//        distance = ticksToRadians(robot.slides.targetPos.pos - robot.slides.getCurrentPosition());
+//        double instantTargetPos = robot.slides.rightSlidesProfile.motionProfile(time.seconds(), distance, robot.slides.leftSlidesProfile.getMaxVel());
+//        double power = (instantTargetPos - robot.slides.rightSlides.getCurrentPosition()) * kP;
+//        robot.slides.rightSlides.setPower(power);
+//        robot.slides.leftSlides.setPower(power);
 
-        distance = ticksToRadians(robot.slides.slidesPos.pos - robot.slides.getCurrentPosition());
-        double instantTargetPos = robot.slides.rightSlidesProfile.motionProfile(time.seconds(), distance, robot.slides.leftSlidesProfile.getMaxVel());
-        double power = (instantTargetPos - robot.slides.rightSlides.getCurrentPosition()) * kP;
-        robot.slides.rightSlides.setPower(power);
-        robot.slides.leftSlides.setPower(power);
+        robot.slides.setPowerProportional();
 
-        telemetry.addData("left slides velocity", robot.slides.leftSlides.getVelocity(AngleUnit.RADIANS));
+        telemetry.addData("slides power ", robot.slides.leftSlides.getPower());
+        telemetry.addData("velocity in ticks / velocity in radians", robot.slides.leftSlides.getVelocity(AngleUnit.RADIANS)/robot.slides.leftSlides.getVelocity());
         telemetry.addData("right slides velocity", robot.slides.rightSlides.getVelocity(AngleUnit.RADIANS));
         telemetry.update();
     }

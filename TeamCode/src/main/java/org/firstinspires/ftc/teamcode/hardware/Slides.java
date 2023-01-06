@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.Range;
 
 
 public class Slides {
@@ -12,17 +13,22 @@ public class Slides {
     public DcMotorProfiler leftSlidesProfile;
     public DcMotorProfiler rightSlidesProfile;
 
-    public State slidesPos;
+    public State targetPos;
 
     // minimum power to hold slides
     final double SLIDES_POWER = 0.8;
+    final double MIN_POWER = 0.1;
 
     public enum State {
         HIGH(1670),
         MID(980),
         READY(600),
         LOW_AND_INTAKE(180),
-        INIT(0);
+        INIT(0),
+
+
+        AUTO_READY(900),
+        CONE_5(650);
         // the slides will never run to 0 position in opmode
 
         public int pos;
@@ -73,7 +79,7 @@ public class Slides {
     }
 
     public void run(State s){
-        slidesPos = s;
+        targetPos = s;
 
         // TODO uncomment to use no profile
         leftSlides.setTargetPosition(s.pos);
@@ -103,5 +109,18 @@ public class Slides {
         run(State.LOW_AND_INTAKE);
     }
 
+    public void readyAuto() {run(State.AUTO_READY);}
+
+    public void fifthAutoCone() {run(State.CONE_5);}
+
     public int getCurrentPosition() {return rightSlides.getCurrentPosition();}
+
+    public void setPowerProportional() {
+        // largest distance = low -> high = 1670 - 180 = 1490 -> 0.9
+        double power = Range.clip(MIN_POWER + (Math.abs(targetPos.pos - getCurrentPosition())) / 1655.0,
+                MIN_POWER, 1.0);
+
+        leftSlides.setPower(power);
+        rightSlides.setPower(power);
+    }
 }
