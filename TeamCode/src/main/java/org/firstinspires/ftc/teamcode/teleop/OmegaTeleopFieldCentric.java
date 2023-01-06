@@ -170,7 +170,8 @@ public class OmegaTeleopFieldCentric extends OpMode {
         double rx = gamepad1.right_stick_x; // used to b * 0.75 to make turning slower
 
         // Read inverse IMU heading, as the IMU heading is CW positive
-        double botHeading = -imu.getAngularOrientation().firstAngle;
+        double offset = Math.toRadians(90); // degrees
+        double botHeading = -(imu.getAngularOrientation().firstAngle + offset);
 
         double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
         double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);

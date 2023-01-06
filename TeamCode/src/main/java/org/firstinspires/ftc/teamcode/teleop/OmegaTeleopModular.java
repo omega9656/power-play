@@ -66,7 +66,11 @@ public class OmegaTeleopModular extends OpMode {
         deposit();
         intake();
 
-        telemetry.addData("field centric: ", fieldCentric);
+        telemetry.addData("slides ", robot.slides.getCurrentPosition());
+        telemetry.addData("slides targ", robot.slides.slidesPos.pos);
+
+        telemetry.addData("left servo pos: ", robot.arm.leftServoProfile.getCurrentPosition());
+        telemetry.addData("left servo targ: ", robot.arm.leftServoProfile.getTargetPosition());
     }
 
     public void deposit(){

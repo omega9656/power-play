@@ -15,13 +15,13 @@ public class Slides {
     public State slidesPos;
 
     // minimum power to hold slides
-    final double SLIDES_POWER = 0;
+    final double SLIDES_POWER = 0.8;
 
     public enum State {
         HIGH(1670),
         MID(980),
         READY(600),
-        LOW_AND_INTAKE(280),
+        LOW_AND_INTAKE(180),
         INIT(0);
         // the slides will never run to 0 position in opmode
 
