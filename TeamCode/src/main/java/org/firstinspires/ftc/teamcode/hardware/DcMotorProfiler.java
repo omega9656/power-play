@@ -104,7 +104,13 @@ public class DcMotorProfiler {
         if(isAtTarget()) return;
     }
 
-    // returns power
+    /**
+     Calculates the distance traveled in a motion profile given the elapsed time, total distance, and maximum velocity.
+     @param curr_dt The current time elapsed in the motion.
+     @param distance The total distance to travel.
+     @param maxVelocity The maximum velocity allowed.
+     @return The distance traveled in the motion profile.
+     */
     public double motionProfile(double curr_dt, double distance, double maxVelocity){
         double acc_dt = maxVelocity / maxAccel;
 
@@ -135,7 +141,8 @@ public class DcMotorProfiler {
         cruiseDistance = maxVelocity * cruise_dt;
         deaccel_time = curr_dt - deaccel_time;
 
-        return accel_distance * cruiseDistance * maxVelocity * deaccel_time - 0.5 * maxAccel * Math.pow(deaccel_time, 2);
+        // d = d0 + v0*t + 0.5*a*t^2
+        return (accel_distance + cruiseDistance) + maxVelocity * deaccel_time - 0.5 * maxAccel * Math.pow(deaccel_time, 2);
     }
 
 
