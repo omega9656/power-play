@@ -30,9 +30,11 @@ public class MeepMeepTesting {
                         drive.trajectorySequenceBuilder(start).setReversed(true)
                                 // start position to drop off indicated by barcode
                                 // move to intake cone #2
-                                .splineToLinearHeading(new Pose2d(start.getX()-6, start.getY()+56,
+                                .splineToLinearHeading(new Pose2d(24, -8,
                                         //                                               45                    135
-                                        Math.toRadians(Math.toDegrees(start.getHeading()))), Math.toRadians(135))
+                                        Math.toRadians(Math.toDegrees(start.getHeading()))), Math.toRadians(180)).setReversed(false)
+                                .splineToLinearHeading(new Pose2d(70, -15, Math.toRadians(0)), Math.toRadians(0))
+                                .splineToLinearHeading(new Pose2d(27, -5, Math.toRadians(-45)), Math.toRadians(170)).setReversed(false)
                                 .build()
                 );
 

@@ -43,8 +43,8 @@ public class SlidesTest extends OpMode {
         robot.slides.setPowerProportional();
 
         telemetry.addData("slides power ", robot.slides.leftSlides.getPower());
-        telemetry.addData("velocity in ticks / velocity in radians", robot.slides.leftSlides.getVelocity(AngleUnit.RADIANS)/robot.slides.leftSlides.getVelocity());
-        telemetry.addData("right slides velocity", robot.slides.rightSlides.getVelocity(AngleUnit.RADIANS));
+        telemetry.addData("slides pos", robot.slides.getCurrentPosition());
+        telemetry.addData("slides target pos", robot.slides.targetPos.pos);
         telemetry.update();
     }
 

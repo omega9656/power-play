@@ -92,6 +92,8 @@ public class RightConeStackLow extends LinearOpMode
         DROP_LOW,
         BACK_FROM_INTAKE,
         TURN_TO_LOW_FROM_INTAKE,
+        CONE_STACK_FROM_LOW,
+        TURN_FROM_LOW,
         PARK,
         IDLE
     }
@@ -230,12 +232,17 @@ public class RightConeStackLow extends LinearOpMode
             telemetry.update();
         }
 
+        double TURN_TO_HIGH = 50;
+        double TURN_TO_CONE_STACK = 40;
+        double TURN_TO_LOW = 60;
+        double TURN_BACK_FROM_LOW = -60;
+
         // first trajectory, moves to high from wall to drop cone
         Trajectory toDeposit = drive.trajectoryBuilder(startPose)
                 .back(49)
                 .build();
 
-        Trajectory dropConeHigh = drive.trajectoryBuilder(toDeposit.end().plus(new Pose2d(0, 0, Math.toRadians(45))))
+        Trajectory dropConeHigh = drive.trajectoryBuilder(toDeposit.end().plus(new Pose2d(0, 0, Math.toRadians(TURN_TO_HIGH))))
                 .back(12) // 9.75
                 .build();
 
@@ -243,20 +250,24 @@ public class RightConeStackLow extends LinearOpMode
                 .forward(15) // 10.5
                 .build();
 
-        Trajectory toConeStack = drive.trajectoryBuilder(backConeHigh.end().plus(new Pose2d(0, 0, Math.toRadians(45))))
-                .forward(23.5)
+        Trajectory toConeStack = drive.trajectoryBuilder(backConeHigh.end().plus(new Pose2d(0, 0, Math.toRadians(TURN_TO_CONE_STACK))))
+                .forward(22.5)
                 .build();
 
         Trajectory backConeStack = drive.trajectoryBuilder(toConeStack.end())
-                .back(7)
+                .back(5)
                 .build();
 
-        Trajectory dropConeLow = drive.trajectoryBuilder(toDeposit.end().plus(new Pose2d(0, 0, Math.toRadians(45))))
-                .back(2)
+        Trajectory dropConeLow = drive.trajectoryBuilder(backConeStack.end().plus(new Pose2d(0, 0, Math.toRadians(TURN_TO_LOW))))
+                .back(5)
                 .build();
 
-        Trajectory backConeLow = drive.trajectoryBuilder(backConeStack.end())
-                .forward(2)
+        Trajectory backConeLow = drive.trajectoryBuilder(dropConeLow.end())
+                .forward(5)
+                .build();
+
+        Trajectory toConeStackFromLow = drive.trajectoryBuilder(backConeLow.end().plus(new Pose2d(0, 0, Math.toRadians(TURN_BACK_FROM_LOW))))
+                .forward(5)
                 .build();
 
 //        Trajectory leftZone = drive.trajectoryBuilder(backCone.end().plus(new Pose2d(0, 0, Math.toRadians(45))))
@@ -291,7 +302,7 @@ public class RightConeStackLow extends LinearOpMode
                     if(!drive.isBusy()){
                         currentState = State.TURN_TO_DROP_CONE;
                         //drive.followTrajectoryAsync(dropCone);
-                        drive.turnAsync(Math.toRadians(45));
+                        drive.turnAsync(Math.toRadians(TURN_TO_HIGH));
 //                        slidesTime.reset();
 //                        outTime.reset();
 
@@ -328,10 +339,12 @@ public class RightConeStackLow extends LinearOpMode
 //                            currentState = State.BACK_UP_FROM_LOW;
 //                            robot.arm.intake();
 //                        }
-                        robot.intake.stop();
-                        currentState = State.BACK_UP_FROM_HIGH;
-                        robot.arm.intake();
-                        firstCone = true;
+                        if(outTime.milliseconds() > 2500){
+                            robot.intake.stop();
+                            currentState = State.BACK_UP_FROM_HIGH;
+                            robot.arm.intake();
+                            firstCone = true;
+                        }
                     }
                     break;
                 case BACK_UP_FROM_HIGH:
@@ -340,7 +353,7 @@ public class RightConeStackLow extends LinearOpMode
                     break;
                 case TURN_TO_CONE_STACK:
                     if(!drive.isBusy()){
-                        drive.turnAsync(Math.toRadians(45));
+                        drive.turnAsync(Math.toRadians(TURN_TO_CONE_STACK));
                         robot.slides.readyAuto();
                         currentState = State.TO_CONE_STACK;
                     }
@@ -369,14 +382,15 @@ public class RightConeStackLow extends LinearOpMode
                     break;
                 case TURN_TO_LOW_FROM_INTAKE:
                     if(!drive.isBusy()) {
-                        drive.turnAsync(Math.toRadians(45));
+                        drive.turnAsync(Math.toRadians(TURN_TO_LOW));
                         robot.slides.lowAndIntake();
                         robot.arm.deposit();
                         currentState = State.TO_LOW;
                     }
+                    break;
                 case TO_LOW:
                     if(!drive.isBusy()){
-                        drive.followTrajectoryAsync(backConeLow);
+                        drive.followTrajectoryAsync(dropConeLow);
                         currentState = State.DROP_LOW;
                     }
                     break;
@@ -387,12 +401,25 @@ public class RightConeStackLow extends LinearOpMode
                             robot.intake.out();
                         }
                         robot.intake.stop();
+                        robot.arm.intake();
                         currentState = State.BACK_UP_FROM_LOW;
                     }
                     break;
                 case BACK_UP_FROM_LOW:
                     drive.followTrajectoryAsync(backConeLow);
-                    currentState = State.PARK;
+                    robot.slides.readyAuto();
+                    currentState = State.TURN_FROM_LOW;
+                case TURN_FROM_LOW:
+                    if(!drive.isBusy()){
+                        drive.turnAsync(Math.toRadians(TURN_BACK_FROM_LOW));
+                        currentState = State.CONE_STACK_FROM_LOW;
+                    }
+                    break;
+                case CONE_STACK_FROM_LOW:
+                    if(!drive.isBusy()){
+                        drive.followTrajectoryAsync(toConeStackFromLow);
+                        currentState = State.INTAKE;
+                    }
                 case PARK:
                     if(!drive.isBusy()){
 //                        if(tagOfInterest == null || tagOfInterest.id == LEFT){

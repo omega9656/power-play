@@ -12,7 +12,7 @@ public class Arm {
     public enum Position {
         INIT(0.45), // was .5
         INTAKE(0),
-        DEPOSIT(0.65); // was .75
+        DEPOSIT(0.7); // was .75
 
         // this is a value from 0 to 1
         public double pos;

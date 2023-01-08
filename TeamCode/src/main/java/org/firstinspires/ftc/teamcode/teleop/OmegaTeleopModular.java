@@ -60,11 +60,6 @@ public class OmegaTeleopModular extends OpMode {
 //        robot.arm.leftServoProfile.update();
 //        robot.arm.rightServoProfile.update();
         robot.arm.update();
-
-        if(slidesProfile) {
-            robot.slides.rightSlidesProfile.update();
-            robot.slides.leftSlidesProfile.update();
-        }
         deposit();
         intake();
 

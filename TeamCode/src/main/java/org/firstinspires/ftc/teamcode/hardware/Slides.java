@@ -115,12 +115,21 @@ public class Slides {
 
     public int getCurrentPosition() {return rightSlides.getCurrentPosition();}
 
+    // uses p loop to set power
     public void setPowerProportional() {
-        // largest distance = low -> high = 1670 - 180 = 1490 -> 0.9
-        double power = Range.clip(MIN_POWER + (Math.abs(targetPos.pos - getCurrentPosition())) / 1655.0,
+        // largest distance = low -> high = 1670 - 180 = 1490 -> 0.9        // lower number = longer time at high power, was 1655
+        double power = Range.clip(MIN_POWER + (Math.abs(targetPos.pos - getCurrentPosition()) / 1000.0),
                 MIN_POWER, 1.0);
 
-        leftSlides.setPower(power);
-        rightSlides.setPower(power);
+        if(targetPos.pos - getCurrentPosition() < 0){
+            power = Range.clip(MIN_POWER + (Math.abs(targetPos.pos - getCurrentPosition()) / 3000.0),
+                    MIN_POWER, 1.0);
+            leftSlides.setPower(power);
+            rightSlides.setPower(power);
+        }
+        else {
+            leftSlides.setPower(power);
+            rightSlides.setPower(power);
+        }
     }
 }
