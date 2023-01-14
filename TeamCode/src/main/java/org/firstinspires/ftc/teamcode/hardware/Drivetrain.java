@@ -10,6 +10,10 @@ public class Drivetrain {
     public DcMotorEx backLeft;
     public DcMotorEx frontLeft;
 
+    /**
+     * Drivetrain class is used to manage the drivetrain on the robot.
+     * @param deviceManager DeviceManager object for the robot
+     */
     public Drivetrain(DeviceManager deviceManager) {
         backRight = deviceManager.backRight;
         frontRight = deviceManager.frontRight;
