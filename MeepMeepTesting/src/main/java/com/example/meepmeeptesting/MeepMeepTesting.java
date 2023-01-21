@@ -31,10 +31,12 @@ public class MeepMeepTesting {
                                 // start position to drop off indicated by barcode
                                 // move to intake cone #2
                                 .splineToLinearHeading(new Pose2d(24, -8,
-                                        //                                               45                    135
+                                        //                                                              // TODO SET REVERSED ON AUTO
                                         Math.toRadians(Math.toDegrees(start.getHeading()))), Math.toRadians(180)).setReversed(false)
-                                .splineToLinearHeading(new Pose2d(70, -15, Math.toRadians(0)), Math.toRadians(0))
-                                .splineToLinearHeading(new Pose2d(27, -5, Math.toRadians(-45)), Math.toRadians(170)).setReversed(false)
+                                //                                                                            make neg if hitting ground junc
+                                .splineToLinearHeading(new Pose2d(60, -12, Math.toRadians(0)), Math.toRadians(0)).setReversed(true)
+                                //.splineToLinearHeading(new Pose2d(0, 0, Math.toRadians(0)), Math.toRadians(10))
+                                .splineToLinearHeading(new Pose2d(27, -5, Math.toRadians(-45)), Math.toRadians(135))
                                 .build()
                 );
 

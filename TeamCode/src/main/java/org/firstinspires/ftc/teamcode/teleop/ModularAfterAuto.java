@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
 @TeleOp
-public class OmegaTeleopModular extends OpMode {
+public class ModularAfterAuto extends OpMode {
 
     Robot robot;
     ElapsedTime time;
@@ -21,7 +21,7 @@ public class OmegaTeleopModular extends OpMode {
     @Override
     public void init() {
         robot = new Robot(hardwareMap);
-        robot.init(false, false);
+        robot.init(false, true);
 
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 

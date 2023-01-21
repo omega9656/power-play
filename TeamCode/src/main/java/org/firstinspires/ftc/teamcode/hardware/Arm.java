@@ -10,9 +10,12 @@ public class Arm {
     public ServoProfiler rightServoProfile;
 
     public enum Position {
-        INIT(0.45), // was .5
+        INIT(0.36), // was 0.35, .45
+        EXTENDO_DEPOSIT(0.28),
         INTAKE(0),
-        DEPOSIT(0.7); // was .75
+        DEPOSIT(0.52), // was .6
+        AUTO_DEPOSIT(0.6),
+        GIGA_EXTENDO(1);
 
         // this is a value from 0 to 1
         public double pos;
@@ -30,12 +33,11 @@ public class Arm {
 
         rightServo.setDirection(Servo.Direction.REVERSE);
         leftServo.setDirection(Servo.Direction.FORWARD);
-
         leftServoProfile = new ServoProfiler(leftServo);
         rightServoProfile = new ServoProfiler(rightServo);
 
-        leftServoProfile.setConstraints(1.5, 1.5, 1.5);
-        rightServoProfile.setConstraints(1.5, 1.5, 1.5);
+        leftServoProfile.setConstraints(1.75, 1, 2);
+        rightServoProfile.setConstraints(1.75, 1, 2);
 
         leftServo.setPosition(0);
         rightServo.setPosition(0);
@@ -43,6 +45,11 @@ public class Arm {
         armPosition = Position.INIT;
 
         init();
+    }
+
+    public void setConstraints(double vel, double accel, double prop){
+        leftServoProfile.setConstraints(vel, accel, prop);
+        rightServoProfile.setConstraints(vel, accel, prop);
     }
 
     public void setArmPosition(Position pos) {
@@ -62,6 +69,14 @@ public class Arm {
     public void deposit() {
         setArmPosition(Position.DEPOSIT);
     }
+
+    public void giga() {setArmPosition(Position.GIGA_EXTENDO);}
+
+    public void extendoDeposit() {
+        setArmPosition(Position.EXTENDO_DEPOSIT);
+    }
+
+    public void autoDeposit() {setArmPosition(Position.AUTO_DEPOSIT);}
 
     public void update() {
         leftServoProfile.update();

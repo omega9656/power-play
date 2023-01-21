@@ -43,8 +43,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name="Right Stack Low Lines")
-public class RightConeStackLowLines extends LinearOpMode
+@Autonomous(name="Park Lines")
+public class ParkLines extends LinearOpMode
 {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -78,7 +78,7 @@ public class RightConeStackLowLines extends LinearOpMode
     int MIDDLE = 2;
     int RIGHT = 3;
 
-    double zoneX = 33;
+    int zoneX = 33;
 
     AprilTagDetection tagOfInterest = null;
 
@@ -99,8 +99,6 @@ public class RightConeStackLowLines extends LinearOpMode
         robot.init(true, false);
 
         robot.arm.init();
-
-        zoneX = 34;
 
         camera.setPipeline(aprilTagDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -225,16 +223,13 @@ public class RightConeStackLowLines extends LinearOpMode
         //drive.setPoseEstimate(startPose);
 
         if(tagOfInterest == null || tagOfInterest.id == MIDDLE){
-            zoneX = 32.8;
+            zoneX = 33;
         }
         else if(tagOfInterest.id == RIGHT){
             zoneX = 58;
         }
         else if(tagOfInterest.id == LEFT){
-            zoneX = 8;
-        }
-        else {
-            zoneX = 34;
+            zoneX = 10;
         }
 
         TrajectorySequence t = drive.trajectorySequenceBuilder(startPose).setReversed(true)
@@ -242,132 +237,13 @@ public class RightConeStackLowLines extends LinearOpMode
                     robot.slides.ready();
                     robot.intake.hold();
                 })
-                // high #1                           18, -7.5
-                .splineToLinearHeading(new Pose2d(18, -9, // 19, -7.75
-                        //                                               45                    135 -> 150
-                        Math.toRadians(Math.toDegrees(startPose.getHeading()))), Math.toRadians(165))
-                .setReversed(false)//TODO add .setReversed(false)
-
-                // outtake high #1
-                .UNSTABLE_addTemporalMarkerOffset(-2, () -> {
-                    robot.slides.high();
-                    robot.arm.deposit();
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0.25, () -> robot.intake.out())
-                .waitSeconds(0.5)
-                // while moving to cone stack go to intake position
+                .lineToConstantHeading(new Vector2d(34.2, -36))
+                .turn(Math.toRadians(90))
+                .lineToConstantHeading(new Vector2d(zoneX, -36))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    robot.intake.stop();
                     robot.arm.intake();
+                    robot.slides.init();
                 })
-                .UNSTABLE_addTemporalMarkerOffset(2, () -> robot.slides.readyAuto())
-                //
-
-                .turn(Math.toRadians(40))
-
-                // cone stack spline #1              61     -14
-                .splineToLinearHeading(new Pose2d(58, -14.5, Math.toRadians(startPose.getHeading())), Math.toRadians(0))
-                .setReversed(true)//TODO add .setReversed(true)
-
-                // intake #1
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    robot.intake.in();
-                    robot.slides.fifthAutoCone();
-                })
-                // lifts slides after intaking cone
-                .UNSTABLE_addTemporalMarkerOffset(0.75, () -> {
-                    robot.intake.hold();
-                    robot.slides.readyAuto();
-                })
-                .UNSTABLE_addTemporalMarkerOffset(1, () -> {
-                    robot.arm.deposit();
-                })
-                .waitSeconds(1)
-
-                .UNSTABLE_addTemporalMarkerOffset(2, () -> {
-                    //robot.slides.autoHigh();
-                    robot.slides.high();
-                    robot.arm.deposit();
-                })
-
-                //
-                // to low junction                    58,    -23
-                //.splineToLinearHeading(new Pose2d( 50, -34, Math.toRadians(startPose.getHeading())), Math.toRadians(180))
-                // high junction #2                  28     -10
-                //.splineToLinearHeading(new Pose2d(25.5, -5, Math.toRadians(-48)), Math.toRadians(170))
-                //                                                                 -54
-                //.splineToLinearHeading(new Pose2d(23.5, -12, Math.toRadians(-55)), Math.toRadians(180))
-                //.lineToLinearHeading(new Pose2d(25, -12, Math.toRadians(-40)))
-                .lineToConstantHeading(new Vector2d(30, -10))
-
-                // outtake high #2
-
-                .lineToLinearHeading(new Pose2d(25, -6.5, Math.toRadians(-63)))
-                .UNSTABLE_addTemporalMarkerOffset(0.25, () -> robot.intake.out())
-                .waitSeconds(0.5)
-                // turnX -> line to outtake
-                //.turn(Math.toRadians(-25))
-                //.lineToLinearHeading(new Pose2d(24, -10, Math.toRadians(-80)))
-                // while moving to cone stack go to intake position
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    robot.intake.stop();
-                    robot.arm.intake();
-                })
-                .UNSTABLE_addTemporalMarkerOffset(2, () -> robot.slides.readyAuto())
-                //
-
-
-                // cone stack spline #2
-                //.splineToLinearHeading(new Pose2d(60, -8, Math.toRadians(startPose.getHeading())), Math.toRadians(0)).setReversed(false)
-                .lineToLinearHeading(new Pose2d(59, -11.25, Math.toRadians(startPose.getHeading()))).setReversed(false)
-
-                // intake #2
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    robot.intake.in();
-                    robot.slides.fifthAutoCone();
-                })
-                // lifts slides after intaking cone
-                .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
-                    robot.intake.hold();
-                    robot.slides.readyAuto();
-                })
-                .UNSTABLE_addTemporalMarkerOffset(1, () -> {
-                    robot.arm.deposit();
-                })
-//                .waitSeconds(4)
-                .waitSeconds(1)
-                //
-
-                // high junction #3
-                //.splineToLinearHeading(new Pose2d(28, -12, Math.toRadians(-45)), Math.toRadians(135)).setReversed(false)
-                //.lineToLinearHeading(new Pose2d(28, -11, Math.toRadians(-45)))
-                .lineToConstantHeading(new Vector2d(30, -10))
-
-                // outtake high #2
-
-                .lineToLinearHeading(new Pose2d(25, -5, Math.toRadians(-70)))
-
-                // outtake high #3
-                .UNSTABLE_addTemporalMarkerOffset(-2, () -> {
-                    robot.slides.high();
-                    robot.arm.deposit();
-                })
-//                .UNSTABLE_addTemporalMarkerOffset(1, () -> robot.intake.out())
-//                .waitSeconds(2)
-//                .UNSTABLE_addTemporalMarkerOffset(1, () -> {
-//                    robot.intake.stop();
-//                    robot.arm.intake();
-//                })
-
-                .UNSTABLE_addTemporalMarkerOffset(0.25, () -> robot.intake.out())
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    robot.intake.stop();
-                    robot.arm.intake();
-                })
-                .UNSTABLE_addTemporalMarkerOffset(1, () -> robot.slides.init())
-                .lineToLinearHeading(new Pose2d(33, -15, Math.toRadians(0)))
-                .lineToConstantHeading(new Vector2d(zoneX, -15))
                 .build();
 
         drive.followTrajectorySequenceAsync(t);
