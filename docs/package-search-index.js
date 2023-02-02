@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"org.firstinspires.ftc.teamcode.auto"},{"l":"org.firstinspires.ftc.teamcode.drive"},{"l":"org.firstinspires.ftc.teamcode.drive.opmode"},{"l":"org.firstinspires.ftc.teamcode.hardware"},{"l":"org.firstinspires.ftc.teamcode.teleop"},{"l":"org.firstinspires.ftc.teamcode.util"}]
