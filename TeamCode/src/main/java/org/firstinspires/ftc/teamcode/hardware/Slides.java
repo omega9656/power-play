@@ -45,6 +45,12 @@ public class Slides {
 
     }
 
+    /**
+     * Constructor for the Slides class.
+     *
+     * @param deviceManager DeviceManager object used to access the DcMotorEx objects for the slides.
+     * @param afterAuto Whether the slides were powered off after an autonomous run.
+     */
     public Slides(DeviceManager deviceManager, boolean afterAuto){
         leftSlides = deviceManager.leftSlides;
         rightSlides = deviceManager.rightSlides;
@@ -101,6 +107,11 @@ public class Slides {
         init();
     }
 
+    /**
+     * Method for moving the slides to a certain position.
+     *
+     * @param s The target position for the slides.
+     */
     public void run(State s){
         targetPos = s;
 
@@ -112,6 +123,9 @@ public class Slides {
 //        rightSlidesProfile.setTargetPosition(s.pos);
     }
 
+    /**
+     * Method for moving the slides to their initial position.
+     */
     public void init() {
         run(State.INIT);
     }
@@ -122,25 +136,44 @@ public class Slides {
     public void gigaHigh() {
         run(State.GIGA_HIGH);}
 
+    /**
+     * Method for moving the slides to the high position.
+     */
     public void high(){
         run(State.HIGH);
     }
 
+    /**
+     * Method for moving the slides to the medium position.
+     */
     public void medium(){
         run(State.MID);
     }
 
+    /**
+     * Method for moving the slides to the ready position.
+     */
     public void ready(){
         run(State.READY);
     }
 
+    /**
+     * Method for moving the slides to the low and intake position.
+     */
     public void lowAndIntake(){
         run(State.LOW_AND_INTAKE);
     }
 
+    /**
+     * Method for moving the slides to the Auto ready position.
+     */
     public void readyAuto() {
-        run(State.AUTO_READY);}
+        run(State.AUTO_READY);
+    }
 
+    /**
+     * Method for moving the slides to the fifth cone position.
+     */
     public void fifthAutoCone() {
         run(State.CONE_5);}
 
@@ -148,9 +181,16 @@ public class Slides {
         run(State.AUTO_HIGH);
     }
 
+    /**
+     * Returns the current position of the slides.
+     * @return Current position of the slides.
+     */
     public int getCurrentPosition() {return rightSlides.getCurrentPosition();}
 
-    // uses p loop to set power
+    /**
+     * Sets the power of the left and right slides proportional to the distance between the current position and the target position.
+     * The closer the slides are to the target position, the lower the power will be.
+     */
     public void setPowerProportional() {
         // largest distance = low -> high = 1670 - 180 = 1490 -> 0.9        // lower number = longer time at high power, was 1655
         double power = Range.clip(MIN_POWER + (Math.abs(targetPos.pos - getCurrentPosition()) * proportional),

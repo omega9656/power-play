@@ -10,10 +10,19 @@ public class Robot {
     public Intake intake;
     public Slides slides;
 
+    /**
+     * Robot class is used to manage all the hardware objects for the robot.
+     * @param hardwareMap HardwareMap object for the robot
+     */
     public Robot(HardwareMap hardwareMap) {
         deviceManager = new DeviceManager(hardwareMap);
     }
 
+    /**
+     * Initializes the DeviceManager and creates the Drivetrain, Arm, Intake and Slides objects.
+     * @param runningAuto boolean indicating if the robot is running in autonomous mode
+     * @param afterAuto boolean indicating if the robot is running after autonomous mode
+     */
     public void init(boolean runningAuto, boolean afterAuto) {
         deviceManager.init(runningAuto);
 

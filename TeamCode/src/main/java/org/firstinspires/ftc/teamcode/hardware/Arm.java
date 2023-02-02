@@ -27,6 +27,12 @@ public class Arm {
 
     public Position armPosition;
 
+    /**
+     * Constructor for the Arm class. Assigns the left and right servos, sets the direction
+     * of the servos, and sets the initial position of the servos.
+     *
+     * @param deviceManager The DeviceManager object used to get the left and right servos.
+     */
     public Arm(DeviceManager deviceManager) {
         leftServo = deviceManager.leftServo;
         rightServo = deviceManager.rightServo;
@@ -52,20 +58,34 @@ public class Arm {
         rightServoProfile.setConstraints(vel, accel, prop);
     }
 
+    /**
+     * Sets the position of the left and right servos to the specified position.
+     *
+     * @param pos The position to set the servos to.
+     */
     public void setArmPosition(Position pos) {
         armPosition = pos;
         leftServoProfile.setTargetPosition(pos.pos);
         rightServoProfile.setTargetPosition(pos.pos);
     }
 
+    /**
+     * Sets the position of the left and right servos to the "INTAKE" position.
+     */
     public void intake() {
         setArmPosition(Position.INTAKE);
     }
 
+    /**
+     * Sets the position of the left and right servos to the "INIT" position.
+     */
     public void init() {
         setArmPosition(Position.INIT);
     }
 
+    /**
+     * Sets the position of the left and right servos to the "DEPOSIT" position.
+     */
     public void deposit() {
         setArmPosition(Position.DEPOSIT);
     }
@@ -78,6 +98,9 @@ public class Arm {
 
     public void autoDeposit() {setArmPosition(Position.AUTO_DEPOSIT);}
 
+    /**
+     * Updates the positions of the left and right servos.
+     */
     public void update() {
         leftServoProfile.update();
         rightServoProfile.update(leftServoProfile);

@@ -27,18 +27,32 @@ public class DeviceManager {
     public Servo leftServo;
     public Servo rightServo;
 
+    /**
+     * DeviceManager class is used to manage the hardware devices on the robot.
+     * @param hardwareMap HardwareMap object for the robot
+     */
     public DeviceManager(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
     }
 
+    /**
+     * Initializes the hardware devices for teleop.
+     */
     public void initTeleop() {
         init(false);
     }
 
+    /**
+     * Initializes the hardware devices for autonomous.
+     */
     public void initAuto() {
         init(true);
     }
 
+    /**
+     * Initializes the hardware devices.
+     * @param autoRunning boolean indicating if the robot is in autonomous mode
+     */
     public void init(boolean autoRunning) {
         if (!autoRunning) {
             backRight = hardwareMap.get(DcMotorEx.class, "back_right");

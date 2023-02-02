@@ -20,6 +20,10 @@ public class Intake {
         }
     }
 
+    /**
+     * Intake class is used to manage the intake motor on the robot.
+     * @param deviceManager DeviceManager object for the robot
+     */
     public Intake(DeviceManager deviceManager) {
         motor = deviceManager.intake;
 
@@ -30,22 +34,38 @@ public class Intake {
         stop();
     }
 
+    /**
+     * Sets the power of the motor to the corresponding value and updates the state variable.
+     * @param mode Mode enumeration value representing the desired state of the intake.
+     */
     private void run(Mode mode) {
         motor.setPower(mode.power);
         state = mode;
     }
 
+    /**
+     * Intake cone
+     */
     public void in() {
         run(Mode.IN);
     }
 
+    /**
+     * Hold cone in place when moving
+     */
     public void hold() {
         run(Mode.HOLD);
     }
 
+    /**
+     * Deposit the cone
+     */
     public void out() {
         run(Mode.OUT);
     }
 
+    /**
+     * Stop the intake motor
+     */
     public void stop() {run(Mode.STOP);}
 }

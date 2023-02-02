@@ -37,6 +37,10 @@ public class DcMotorProfiler {
         }
     }
 
+    /**
+     * Constructor for DcMotorProfiler class.
+     * @param m DcMotorEx object for the motor to be controlled
+     */
     public DcMotorProfiler(DcMotorEx m) {
         motor = m;
         // tolerance seems high but this number is in ticks
@@ -44,25 +48,45 @@ public class DcMotorProfiler {
         deltaTime = new ElapsedTime();
     }
 
+    /**
+     * Set the maximum velocity and acceleration of the motor in terms of proportions of the maximum speed.
+     * @param vel Proportion of maximum velocity
+     * @param accel Proportion of maximum acceleration
+     */
     public void setConstraints(double vel, double accel) {
         maxVel = vel * MAX_RADIANS_PER_SEC;
         maxAccel = accel;
     }
 
+    /**
+     * Set the maximum velocity and acceleration of the motor using a Constraints object.
+     * @param c Constraints object containing the maximum velocity and acceleration
+     */
     public void setConstraints(Constraints c) {
         setConstraints(c.maxVelocity, c.maxAcceleration);
     }
 
+    /**
+     * Set the target position for the motor to reach.
+     * @param target target position in encoder ticks
+     */
     public void setTargetPosition(int target) {
         targetPosition = target;
         motor.setTargetPosition(target);
         deltaTime.reset();
     }
+
+    /**
+     * Set the tolerance for the target position.
+     * @param tolerance target position tolerance in encoder ticks
+     */
     public void setTargetTolerance(double tolerance) {
         targetTolerance = tolerance;
     }
 
-    // fun method to update servo
+    /**
+     * Update the motor's velocity based on the target position and the set constraints.
+     */
     public void update() {
         double velocity = motor.getVelocity(AngleUnit.RADIANS);
         // get the change in time from the previous change
@@ -98,6 +122,10 @@ public class DcMotorProfiler {
         deltaTime.reset();
     }
 
+    /**
+     * Update the motor's velocity based on the target position and the set constraints, copying the output velocity from another DcMotorProfiler.
+     * @param copy DcMotorProfiler to copy output velocity from
+     */
     public void update(DcMotorProfiler copy){
         outputVelocity = copy.outputVelocity;
         motor.setVelocity(outputVelocity, AngleUnit.RADIANS);
@@ -145,34 +173,66 @@ public class DcMotorProfiler {
         return (accel_distance + cruiseDistance) + maxVelocity * deaccel_time - 0.5 * maxAccel * Math.pow(deaccel_time, 2);
     }
 
-
+    /**
+     * Returns true if the motor is within the target tolerance of the target position, false otherwise.
+     * @return Boolean indicating if the motor is at target
+     */
     public boolean isAtTarget() {
         return Math.abs(getCurrentPosition() - getTargetPosition()) <= targetTolerance;
     }
 
+    /**
+     * Returns the current position of the motor in encoder ticks.
+     * @return Current position in encoder ticks
+     */
     public double getCurrentPosition() {
         return motor.getCurrentPosition();
     }
 
+    /**
+     * Returns the DcMotorEx object being controlled by the DcMotorProfiler.
+     * @return DcMotorEx object
+     */
     public DcMotorEx getMotor() {
         return motor;
     }
 
+    /**
+     * Returns the maximum velocity of the motor in radians per second.
+     * @return maximum velocity in radians per second
+     */
     public double getMaxVel() {
         return maxVel;
     }
 
+    /**
+     * Returns the maximum acceleration of the motor in radians per second squared.
+     * @return maximum acceleration in radians per second squared
+     */
     public double getMaxAccel() {
         return maxAccel;
     }
 
+    /**
+     * Returns the target position of the motor in encoder ticks.
+     * @return target position in encoder ticks
+     */
     public double getTargetPosition() {
         return targetPosition;
     }
 
+    /**
+     * Returns the target tolerance of the motor in encoder ticks.
+     * @return target tolerance in encoder ticks
+     */
     public double getTargetTolerance() {
         return targetTolerance;
     }
 
+    /**
+     * Converts encoder ticks to radians.
+     * @param ticks Encoder ticks
+     * @return Radians
+     */
     public double ticksToRadians(double ticks) {return 2 * Math.PI * ticks / TICKS_PER_REVOLUTION;}
 }
