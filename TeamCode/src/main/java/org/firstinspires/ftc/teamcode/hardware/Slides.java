@@ -22,6 +22,8 @@ public class Slides {
     final double SLIDES_DOWN = 0.9; // 0.9
     final double MIN_POWER = 0.1;
 
+    final double proportional = 1 / 1000.0;
+
     public enum State {
         GIGA_HIGH(2000), // 2075
         HIGH(1600), // 1670
@@ -111,48 +113,38 @@ public class Slides {
     }
 
     public void init() {
-        setSlidesPower(SLIDES_DOWN);
         run(State.INIT);
     }
 
     public void cycleReady() {
-        setSlidesPower(SLIDES_DOWN);
         run(State.CYCLE_READY);}
 
     public void gigaHigh() {
-        setSlidesPower(SLIDES_POWER);
         run(State.GIGA_HIGH);}
 
     public void high(){
-        setSlidesPower(SLIDES_POWER);
         run(State.HIGH);
     }
 
     public void medium(){
-        setSlidesPower(SLIDES_POWER);
         run(State.MID);
     }
 
     public void ready(){
-        setSlidesPower(SLIDES_DOWN);
         run(State.READY);
     }
 
     public void lowAndIntake(){
-        setSlidesPower(SLIDES_DOWN);
         run(State.LOW_AND_INTAKE);
     }
 
     public void readyAuto() {
-        setSlidesPower(SLIDES_DOWN);
         run(State.AUTO_READY);}
 
     public void fifthAutoCone() {
-        setSlidesPower(SLIDES_DOWN);
         run(State.CONE_5);}
 
     public void autoHigh() {
-        setSlidesPower(SLIDES_POWER);
         run(State.AUTO_HIGH);
     }
 
@@ -161,7 +153,7 @@ public class Slides {
     // uses p loop to set power
     public void setPowerProportional() {
         // largest distance = low -> high = 1670 - 180 = 1490 -> 0.9        // lower number = longer time at high power, was 1655
-        double power = Range.clip(MIN_POWER + (Math.abs(targetPos.pos - getCurrentPosition()) / 1000.0),
+        double power = Range.clip(MIN_POWER + (Math.abs(targetPos.pos - getCurrentPosition()) * proportional),
                 MIN_POWER, 1.0);
 
         if(targetPos.pos - getCurrentPosition() < 0){
