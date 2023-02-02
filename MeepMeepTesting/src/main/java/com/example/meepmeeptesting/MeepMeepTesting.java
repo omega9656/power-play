@@ -28,38 +28,13 @@ public class MeepMeepTesting {
                 .setConstraints(48, 30, 55, Math.toRadians(60), 13)
                 .followTrajectorySequence(drive -> // start pose
                         drive.trajectorySequenceBuilder(start).setReversed(true)
-                                // start position to drop off indicated by barcode
-                                // move to intake cone #2
-                                .splineToLinearHeading(new Pose2d(24, -8,
-                                        //                                                              // TODO SET REVERSED ON AUTO
-                                        Math.toRadians(Math.toDegrees(start.getHeading()))), Math.toRadians(180)).setReversed(false)
-                                //                                                                            make neg if hitting ground junc
-                                .splineToLinearHeading(new Pose2d(60, -12, Math.toRadians(0)), Math.toRadians(0)).setReversed(true)
-                                //.splineToLinearHeading(new Pose2d(0, 0, Math.toRadians(0)), Math.toRadians(10))
-                                .splineToLinearHeading(new Pose2d(27, -5, Math.toRadians(-45)), Math.toRadians(135))
-                                .build()
-                );
+                                .splineToSplineHeading(new Pose2d(34, -30, Math.toRadians(270)), Math.toRadians(90))
+                                .splineToSplineHeading(new Pose2d(28, -12, Math.toRadians(315)), Math.toRadians(90))
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_KAI_DARK)
-                .setDarkMode(true)
-                .setBackgroundAlpha(0.95f)
-                .addEntity(myBot)
-                .start();
-    }
-
-    public static void coneToHighSpline(MeepMeep meepMeep){
-        Pose2d start = new Pose2d(-60, -12, Math.toRadians(180));
-
-        //                           -58
-        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAnccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(48, 30, 55, Math.toRadians(60), 13)
-                .followTrajectorySequence(drive -> // start pose
-                        drive.trajectorySequenceBuilder(start).setReversed(true)
-                                // start position to drop off indicated by barcode
-                                // move to intake cone #2
-                                .splineToSplineHeading(new Pose2d(start.getX()+32, start.getY()+5.5,
-                                        Math.toRadians(Math.toDegrees(start.getHeading()+45))), Math.toRadians(0))
+                                .setReversed(false)
+                                .splineToSplineHeading(new Pose2d(40, -14, Math.toRadians(0)), Math.toRadians(0))
+                                .splineToSplineHeading(new Pose2d(58, -14, Math.toRadians(0)), Math.toRadians(0))
+                                //.lineToSplineHeading(new Pose2d(34, 0, Math.toRadians(270)))
                                 .build()
                 );
 

@@ -1,38 +1,16 @@
-/*
- * Copyright (c) 2021 OpenFTC Team
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 package org.firstinspires.ftc.teamcode.auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.hardware.RobotOld;
-import org.firstinspires.ftc.teamcode.hardware.ServoProfiler;
+import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -40,18 +18,20 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Disabled
-public class AutoTest extends LinearOpMode
-{
+@Autonomous
+public class SplineStitchTest extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
-    RobotOld robot;
+    Robot robot;
     SampleMecanumDrive drive;
     ElapsedTime slidesTime;
     ElapsedTime outTime;
-    Pose2d startPose = new Pose2d(-35, -62, Math.toRadians(270));
 
+    ElapsedTime intakeTime;
+    //Pose2d startPose = new Pose2d(-35, -62, Math.toRadians(270));
+    //Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
+    Pose2d startPose = new Pose2d(34.2, -62.75, Math.toRadians(270));
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -72,6 +52,8 @@ public class AutoTest extends LinearOpMode
     int MIDDLE = 2;
     int RIGHT = 3;
 
+    double zoneX = 33;
+
     AprilTagDetection tagOfInterest = null;
 
     @Override
@@ -83,21 +65,15 @@ public class AutoTest extends LinearOpMode
 
         slidesTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         outTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        intakeTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        robot = new RobotOld();
-        robot.init(hardwareMap, true, false);
         drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(startPose);
+        robot = new Robot(hardwareMap);
+        robot.init(true, false);
 
-        robot.leftS = new ServoProfiler(robot.leftServo);
-        robot.leftS.setConstraints(1, 1, 1.25);
-        robot.rightS = new ServoProfiler(robot.rightServo);
-        robot.rightS.setConstraints(1, 1, 1.25);
+        robot.arm.init();
 
-        robot.setServoPos(0);
-
-        robot.leftS.setTargetPosition(0.4);
-        robot.rightS.setTargetPosition(0.4);
+        zoneX = 34;
 
         camera.setPipeline(aprilTagDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -124,13 +100,21 @@ public class AutoTest extends LinearOpMode
          */
         while (!isStarted() && !isStopRequested())
         {
-            robot.leftS.update();
-            robot.rightS.update(robot.leftS);
+            robot.arm.leftServoProfile.update();
+            robot.arm.rightServoProfile.update(robot.arm.leftServoProfile);
 
-            telemetry.addData("left servo curr", robot.leftS.getCurrentPosition());
-            telemetry.addData("right servo curr", robot.rightS.getCurrentPosition());
-            telemetry.addData("left servo target", robot.leftS.getTargetPosition());
-            telemetry.addData("right servo target", robot.rightS.getTargetPosition());
+            telemetry.addData("left servo curr", robot.arm.leftServo.getPosition());
+            telemetry.addData("right servo curr", robot.arm.rightServo.getPosition());
+            telemetry.addData("left servo target", robot.arm.leftServoProfile.getTargetPosition());
+            telemetry.addData("right servo target", robot.arm.rightServoProfile.getTargetPosition());
+
+            Pose2d poseEstimate = drive.getPoseEstimate();
+
+            // Print pose to telemetry
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.update();
 
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
@@ -207,38 +191,36 @@ public class AutoTest extends LinearOpMode
             telemetry.update();
         }
 
-        // move servos back down low
-        robot.leftS.setConstraints(1, 1, .75);
-        robot.rightS.setConstraints(1, 1, .75);
-        robot.leftS.setTargetPosition(0);
-        robot.rightS.setTargetPosition(0);
+        TrajectorySequence t = drive.trajectorySequenceBuilder(startPose).setReversed(true)
+//                .splineToSplineHeading(new Pose2d(34, -10, startPose.getHeading()), Math.toRadians(90))
+//                .splineToSplineHeading(new Pose2d(34, 0, startPose.getHeading()), Math.toRadians(90))
 
-        // first trajectory, moves to high from wall to drop cone
-        Trajectory toDeposit = drive.trajectoryBuilder(startPose)
-                .back(59)
+                // TODO uncomment late turn to deposit continuity
+                .splineToSplineHeading(new Pose2d(34, -30, Math.toRadians(270)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(34, -10, Math.toRadians(315)), Math.toRadians(90))
+                .waitSeconds(2)
+                .setReversed(false)
+                .splineToSplineHeading(new Pose2d(40, -10, Math.toRadians(0)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(58, -10, Math.toRadians(0)), Math.toRadians(0))
+
+                .waitSeconds(2)
+
                 .build();
 
-        Trajectory dropCone = drive.trajectoryBuilder(toDeposit.end())
-                .back(10)
-                .build();
+        // ADDED Pose estimate right before start
+        drive.setPoseEstimate(startPose);
+        drive.followTrajectorySequenceAsync(t);
+        while(opModeIsActive() && !isStopRequested()){
+            drive.update();
+            robot.arm.update();
 
-        Trajectory toConeStack = drive.trajectoryBuilder(dropCone.end().plus(new Pose2d(0, 0, Math.toRadians(-40))))
-                .lineToLinearHeading(new Pose2d(-60, -0.5, Math.toRadians(180)))
-                //.splineToLinearHeading(new Pose2d(-60, -12.5, Math.toRadians(180)), Math.toRadians(0))
-                .build();
+            Pose2d poseEstimate = drive.getPoseEstimate();
 
-        Trajectory toHigh = drive.trajectoryBuilder(toConeStack.end())
-                .lineToConstantHeading(new Vector2d(-35, -12.5))
-                .build();
-
-        // just added
-        robot.leftSlides.setPower(.9);
-        robot.rightSlides.setPower(.9);
-        robot.leftSlides.setTargetPosition(280);
-        robot.rightSlides.setTargetPosition(280);
-        // here
-        if(opModeIsActive() && !isStopRequested()){
-            drive.followTrajectory(toDeposit);
+            // Print pose to telemetry
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
+            telemetry.update();
         }
     }
 
