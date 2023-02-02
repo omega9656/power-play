@@ -10,6 +10,9 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
 
 @TeleOp
 public class ModularAfterAuto extends OpMode {
+    enum DriveMode {
+        SQUARED, CUBED, NORMAL
+    }
 
     Robot robot;
     ElapsedTime time;
@@ -53,10 +56,10 @@ public class ModularAfterAuto extends OpMode {
     @Override
     public void loop() {
         if(fieldCentric){
-            fieldCentricDrive(OmegaTeleopFieldCentric.DriveMode.CUBED);
+            fieldCentricDrive(DriveMode.CUBED);
         }
         else {
-            drive(2, OmegaTeleop.DriveMode.CUBED);
+            drive(2, DriveMode.CUBED);
         }
 
 //        robot.arm.leftServoProfile.update();
@@ -137,7 +140,7 @@ public class ModularAfterAuto extends OpMode {
         }
     }
 
-    public void fieldCentricDrive(OmegaTeleopFieldCentric.DriveMode driveMode) {
+    public void fieldCentricDrive(DriveMode driveMode) {
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
         double rx = gamepad1.right_stick_x ; //  * 0.75
@@ -159,13 +162,13 @@ public class ModularAfterAuto extends OpMode {
         double frontRightPower = (rotY - rotX - rx) / denominator;
         double backRightPower = (rotY + rotX - rx) / denominator;
 
-        if (driveMode == OmegaTeleopFieldCentric.DriveMode.SQUARED) {
+        if (driveMode == DriveMode.SQUARED) {
             // need to keep the sign, so multiply by absolute value of itself
             frontLeftPower *= Math.abs(frontLeftPower);
             backLeftPower *= Math.abs(backLeftPower);
             frontRightPower *= Math.abs(frontRightPower);
             backRightPower *= Math.abs(backRightPower);
-        } else if (driveMode == OmegaTeleopFieldCentric.DriveMode.CUBED) {
+        } else if (driveMode == DriveMode.CUBED) {
             frontLeftPower = Math.pow(frontLeftPower, 3);
             backLeftPower = Math.pow(backLeftPower, 3);
             frontRightPower = Math.pow(frontRightPower, 3);
@@ -178,7 +181,7 @@ public class ModularAfterAuto extends OpMode {
         robot.drivetrain.backRight.setPower(backRightPower * 0.6);
     }
 
-    public void drive(double strafe, OmegaTeleop.DriveMode driveMode){
+    public void drive(double strafe, DriveMode driveMode){
         double vertical = -gamepad1.left_stick_y;  // flip sign because y axis is reversed on joystick
 
         // moving left joystick to the right means robot moves right
@@ -201,13 +204,13 @@ public class ModularAfterAuto extends OpMode {
         double backRightPower = (vertical + horizontal - rotate) / denominator; // + hor good
 
         // square or cube gamepad inputs
-        if (driveMode == OmegaTeleop.DriveMode.SQUARED) {
+        if (driveMode == DriveMode.SQUARED) {
             // need to keep the sign, so multiply by absolute value of itself
             frontLeftPower *= Math.abs(frontLeftPower);
             backLeftPower *= Math.abs(backLeftPower);
             frontRightPower *= Math.abs(frontRightPower);
             backRightPower *= Math.abs(backRightPower);
-        } else if (driveMode == OmegaTeleop.DriveMode.CUBED) {
+        } else if (driveMode == DriveMode.CUBED) {
             frontLeftPower = Math.pow(frontLeftPower, 3);
             backLeftPower = Math.pow(backLeftPower, 3);
             frontRightPower = Math.pow(frontRightPower, 3);
