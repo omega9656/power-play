@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -19,7 +19,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class SplineStitchTest extends LinearOpMode {
+public class RightSplineAuto extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
@@ -52,7 +52,7 @@ public class SplineStitchTest extends LinearOpMode {
     int MIDDLE = 2;
     int RIGHT = 3;
 
-    double zoneX = 33;
+    double parkZone = 34.2;
 
     AprilTagDetection tagOfInterest = null;
 
@@ -72,8 +72,6 @@ public class SplineStitchTest extends LinearOpMode {
         robot.init(true, false);
 
         robot.arm.init();
-
-        zoneX = 34;
 
         camera.setPipeline(aprilTagDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -191,25 +189,75 @@ public class SplineStitchTest extends LinearOpMode {
             telemetry.update();
         }
 
-        TrajectorySequence t = drive.trajectorySequenceBuilder(startPose).setReversed(true)
-//                .splineToSplineHeading(new Pose2d(34, -10, startPose.getHeading()), Math.toRadians(90))
-//                .splineToSplineHeading(new Pose2d(34, 0, startPose.getHeading()), Math.toRadians(90))
+        if(tagOfInterest == null || tagOfInterest.id == MIDDLE){
+            parkZone = 34.2;
+        }
+        else if(tagOfInterest.id == RIGHT){
+            parkZone = 58;
+        }
+        else if(tagOfInterest.id == LEFT){
+            parkZone = 8;
+        }
 
-                // TODO uncomment late turn to deposit continuity
+        TrajectorySequence startToHigh = drive.trajectorySequenceBuilder(startPose)
+                .setReversed(true)
+
+                // continious path to high junction
                 .splineToSplineHeading(new Pose2d(34, -30, Math.toRadians(270)), Math.toRadians(90))
                 .splineToSplineHeading(new Pose2d(34, -10, Math.toRadians(315)), Math.toRadians(90))
                 .waitSeconds(2)
+
+                // deposit
+
+                .build();
+
+        TrajectorySequence highToConeStack = drive.trajectorySequenceBuilder(startToHigh.end())
                 .setReversed(false)
+
+                // continuous path to cone stack
                 .splineToSplineHeading(new Pose2d(40, -10, Math.toRadians(0)), Math.toRadians(0))
                 .splineToSplineHeading(new Pose2d(58, -10, Math.toRadians(0)), Math.toRadians(0))
+
+                // pick up cone
 
                 .waitSeconds(2)
 
                 .build();
 
+        TrajectorySequence coneStacktoHigh = drive.trajectorySequenceBuilder(highToConeStack.end())
+                // TODO debug reversed
+                .setReversed(false)
+
+                // continuous path to high junction (same position as end of startToHigh
+                .splineToSplineHeading(new Pose2d(34, -10, Math.toRadians(315)), Math.toRadians(90))
+
+                // deposit
+
+                .waitSeconds(2)
+
+                .build();
+
+        TrajectorySequence highToPark = drive.trajectorySequenceBuilder(coneStacktoHigh.end())
+                // TODO debug reversed
+                .setReversed(false)
+
+                // continuous path to high junction (same position as end of startToHigh
+                .splineToSplineHeading(new Pose2d(34, -11, Math.toRadians(0)), Math.toRadians(90))
+
+                //park
+                .splineToSplineHeading(new Pose2d(34, -11, Math.toRadians(0)), Math.toRadians(90))
+
+                // deposit
+
+                .waitSeconds(2)
+
+                .build();
+
+
+
         // ADDED Pose estimate right before start
         drive.setPoseEstimate(startPose);
-        drive.followTrajectorySequenceAsync(t);
+        drive.followTrajectorySequenceAsync(startToHigh);
         while(opModeIsActive() && !isStopRequested()){
             drive.update();
             robot.arm.update();
