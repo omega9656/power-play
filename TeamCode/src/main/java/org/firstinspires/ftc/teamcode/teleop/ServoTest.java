@@ -109,12 +109,12 @@ public class ServoTest extends OpMode {
 
         if(gamepad2.left_bumper){
             robot.slides.cycleReady();
-            robot.arm.giga();
+            robot.arm.extendoIntake();
         }
 
         if(gamepad2.b){
             robot.slides.init();
-            robot.arm.giga();
+            robot.arm.extendoIntake();
         }
     }
 }

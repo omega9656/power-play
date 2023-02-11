@@ -84,19 +84,26 @@ public class Arm {
     }
 
     /**
-     * Sets the position of the left and right servos to the "DEPOSIT" position.
+     * Sets the position of the left and right servos to the "DEPOSIT" position
+     * -- for outtaking cones from the back of the robot
      */
     public void deposit() {
         setArmPosition(Position.DEPOSIT);
     }
 
-    public void giga() {setArmPosition(Position.GIGA_EXTENDO);}
+    /**
+     * Sets the position of the left and right servos to the "GIGA EXTENDO" intake position
+     * -- for cycling on high from terminal
+     */
+    public void extendoIntake() {setArmPosition(Position.GIGA_EXTENDO);}
 
+    /**
+     * Sets the position of the left and right servos to the "EXTENDO DEPOSIT" outtake position
+     * -- for cycling on high from terminal
+     */
     public void extendoDeposit() {
         setArmPosition(Position.EXTENDO_DEPOSIT);
     }
-
-    public void autoDeposit() {setArmPosition(Position.AUTO_DEPOSIT);}
 
     /**
      * Updates the positions of the left and right servos.
