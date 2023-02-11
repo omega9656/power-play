@@ -39,8 +39,11 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name="Right Stack Spines")
-public class RightStackSplines extends LinearOpMode
+/**
+ * Last updated on 1/14/23 Wilcox High School Qualifier #2
+ */
+@Autonomous(name="Right Stack Lines")
+public class RightStackLines extends LinearOpMode
 {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -51,8 +54,6 @@ public class RightStackSplines extends LinearOpMode
     ElapsedTime outTime;
 
     ElapsedTime intakeTime;
-    //Pose2d startPose = new Pose2d(-35, -62, Math.toRadians(270));
-    //Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
     Pose2d startPose = new Pose2d(34.2, -62.75, Math.toRadians(270));
 
     static final double FEET_PER_METER = 3.28084;
@@ -214,12 +215,6 @@ public class RightStackSplines extends LinearOpMode
             telemetry.update();
         }
 
-        // just added
-        // here
-
-        //Pose2d startPose = new Pose2d(0, 0, Math.toRadians(270));
-        //drive.setPoseEstimate(startPose);
-
         if(tagOfInterest == null || tagOfInterest.id == MIDDLE){
             zoneX = 32.8;
         }
@@ -287,13 +282,8 @@ public class RightStackSplines extends LinearOpMode
                 })
 
                 //
-                // to low junction                    58,    -23
-                //.splineToLinearHeading(new Pose2d( 50, -34, Math.toRadians(startPose.getHeading())), Math.toRadians(180))
-                // high junction #2                  28     -10
-                //.splineToLinearHeading(new Pose2d(25.5, -5, Math.toRadians(-48)), Math.toRadians(170))
-                //                                                                 -54
-                //.splineToLinearHeading(new Pose2d(23.5, -12, Math.toRadians(-55)), Math.toRadians(180))
-                //.lineToLinearHeading(new Pose2d(25, -12, Math.toRadians(-40)))
+                // to low junction
+                // high junction #2
                 .lineToConstantHeading(new Vector2d(30, -10))
 
                 // outtake high #2
@@ -302,9 +292,6 @@ public class RightStackSplines extends LinearOpMode
                 .UNSTABLE_addTemporalMarkerOffset(0.25, () -> robot.intake.out())
                 .waitSeconds(0.5)
                 // turnX -> line to outtake
-                //.turn(Math.toRadians(-25))
-                //.lineToLinearHeading(new Pose2d(24, -10, Math.toRadians(-80)))
-                // while moving to cone stack go to intake position
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     robot.intake.stop();
                     robot.arm.intake();
@@ -314,7 +301,6 @@ public class RightStackSplines extends LinearOpMode
 
 
                 // cone stack spline #2
-                //.splineToLinearHeading(new Pose2d(60, -8, Math.toRadians(startPose.getHeading())), Math.toRadians(0)).setReversed(false)
                 .lineToLinearHeading(new Pose2d(59, -11.25, Math.toRadians(startPose.getHeading()))).setReversed(false)
 
                 // intake #2
@@ -330,13 +316,9 @@ public class RightStackSplines extends LinearOpMode
                 .UNSTABLE_addTemporalMarkerOffset(1, () -> {
                     robot.arm.deposit();
                 })
-//                .waitSeconds(4)
                 .waitSeconds(1)
-                //
 
                 // high junction #3
-                //.splineToLinearHeading(new Pose2d(28, -12, Math.toRadians(-45)), Math.toRadians(135)).setReversed(false)
-                //.lineToLinearHeading(new Pose2d(28, -11, Math.toRadians(-45)))
                 .lineToConstantHeading(new Vector2d(30, -10))
 
                 // outtake high #2
@@ -348,12 +330,6 @@ public class RightStackSplines extends LinearOpMode
                     robot.slides.high();
                     robot.arm.deposit();
                 })
-//                .UNSTABLE_addTemporalMarkerOffset(1, () -> robot.intake.out())
-//                .waitSeconds(2)
-//                .UNSTABLE_addTemporalMarkerOffset(1, () -> {
-//                    robot.intake.stop();
-//                    robot.arm.intake();
-//                })
 
                 .UNSTABLE_addTemporalMarkerOffset(0.25, () -> robot.intake.out())
                 .waitSeconds(0.5)
@@ -379,13 +355,6 @@ public class RightStackSplines extends LinearOpMode
             telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
             telemetry.update();
         }
-    }
-
-    State curr;
-
-    enum State {
-        TO_HIGH,
-        TURN_HIGH;
     }
 
     void tagToTelemetry(AprilTagDetection detection)
