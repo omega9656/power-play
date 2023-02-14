@@ -70,6 +70,15 @@ public class Arm {
     }
 
     /**
+     * sets both arm servo positions to given, used for value testing purposes before transferring to enums
+     * @param pos value between 0 and 1
+     */
+    public void setArmPosition(double pos){
+        leftServoProfile.setTargetPosition(pos);
+        rightServoProfile.setTargetPosition(pos);
+    }
+
+    /**
      * Sets the position of the left and right servos to the "INTAKE" position.
      */
     public void intake() {
@@ -106,12 +115,30 @@ public class Arm {
     }
 
     /**
+     * gets current servo position
+     * @return current position of the left servo (should be synced with right servo)
+     */
+    public double getCurrentPosition() {
+        return leftServoProfile.getCurrentPosition();
+    }
+
+    /**
+     * gets target servo position
+     * @return target position of the left servo (should be the same as the right servo)
+     */
+    public double getTargetPosition() {
+        return leftServoProfile.getTargetPosition();
+    }
+
+    /**
      * Updates the positions of the left and right servos.
      */
     public void update() {
         leftServoProfile.update();
         rightServoProfile.update(leftServoProfile);
     }
+
+
 
 
 }

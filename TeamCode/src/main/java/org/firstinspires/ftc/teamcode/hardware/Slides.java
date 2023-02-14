@@ -12,14 +12,8 @@ public class Slides {
     public DcMotorEx leftSlides;
     public DcMotorEx rightSlides;
 
-    public DcMotorProfiler leftSlidesProfile;
-    public DcMotorProfiler rightSlidesProfile;
-
     public State targetPos;
 
-    // minimum power to hold slides
-    final double SLIDES_POWER = 0.9; // 0.8
-    final double SLIDES_DOWN = 0.9; // 0.9
     final double MIN_POWER = 0.1;
 
     final double proportional = 1 / 1000.0;
@@ -70,21 +64,7 @@ public class Slides {
         }
         leftSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-//        rightSlides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        rightSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//
-//        leftSlides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        leftSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//
-//        // since slides are powered off after auto, and don't return to their pre-auto positions,
-//        // we don't reset the encoder to maintain accuracy of deposit positions
-//        // *we don't want to rezero slides position at a higher spot
-//        if(!afterAuto){
-//            leftSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            rightSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        }
-
-        leftSlides.setPower(MIN_POWER); // SLIDES_POWER
+        leftSlides.setPower(MIN_POWER);
         rightSlides.setPower(MIN_POWER);
 
         leftSlides.setTargetPosition(0);
@@ -93,16 +73,6 @@ public class Slides {
         rightSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlides.setDirection(DcMotorSimple.Direction.REVERSE);
         leftSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        leftSlidesProfile = new DcMotorProfiler(leftSlides);
-        rightSlidesProfile = new DcMotorProfiler(rightSlides);
-
-        // vel in proportion of max, accel in radians
-        leftSlidesProfile.setConstraints(0.6, 10);
-        rightSlidesProfile.setConstraints(0.6, 10);
-
-//        rightSlidesProfile.setTargetPosition(0);
-//        leftSlidesProfile.setTargetPosition(0);
 
         init();
     }
@@ -118,9 +88,6 @@ public class Slides {
         // TODO uncomment to use no profile
         leftSlides.setTargetPosition(s.pos);
         rightSlides.setTargetPosition(s.pos);
-
-//        leftSlidesProfile.setTargetPosition(s.pos);
-//        rightSlidesProfile.setTargetPosition(s.pos);
     }
 
     /**
@@ -177,8 +144,17 @@ public class Slides {
     public void fifthAutoCone() {
         run(State.CONE_5);}
 
-    public void autoHigh() {
-        run(State.AUTO_HIGH);
+    /**
+     * Method for lowering slides from above cone stack
+     * precondition: slides are at stationary, previous target position
+     */
+    public void lower(){
+        // TODO: check current state, lower relative to current state:
+        //  make enums for each cone stack height
+        targetPos = State.LOW_AND_INTAKE;
+
+        leftSlides.setTargetPosition(getCurrentPosition()-350);
+        rightSlides.setTargetPosition(getCurrentPosition()-350);
     }
 
     /**
@@ -197,31 +173,10 @@ public class Slides {
                 MIN_POWER, 1.0);
 
         if(targetPos.pos - getCurrentPosition() < 0){
-//            power = Range.clip(MIN_POWER + (Math.abs(targetPos.pos - getCurrentPosition()) / 1000.0),
-//                    MIN_POWER, 1.0);
-            leftSlides.setPower(0.8);
-            rightSlides.setPower(0.8);
+            setSlidesPower(0.8);
         }
         else {
-            leftSlides.setPower(power);
-            rightSlides.setPower(power);
-        }
-    }
-
-    public void setVelocityProportional(){
-        double MIN_VEL = 0.5 * Math.PI; // 1.74
-        double MAX_VEL = 8 * Math.PI; // 24
-        double vel = Range.clip(MIN_VEL + (Math.abs(targetPos.pos - getCurrentPosition()) / 75.0),
-                MIN_VEL, MAX_VEL);
-        // down
-        if(targetPos.pos - getCurrentPosition() < 0){
-            leftSlides.setVelocity(-vel, AngleUnit.RADIANS);
-            rightSlides.setVelocity(-vel, AngleUnit.RADIANS);
-        }
-        // up
-        else {
-            leftSlides.setVelocity(vel, AngleUnit.RADIANS);
-            rightSlides.setVelocity(vel, AngleUnit.RADIANS);
+            setSlidesPower(power);
         }
     }
 
