@@ -96,7 +96,7 @@ public class Intake {
      * @return true if current is greater than stall current,
      */
     public boolean isStalled(){
-        return getAmps() > STALL_CURRENT;
+        return getAmps() >= STALL_CURRENT;
     }
 
     /**

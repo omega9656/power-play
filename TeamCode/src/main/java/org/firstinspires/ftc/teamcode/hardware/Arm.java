@@ -9,6 +9,11 @@ public class Arm {
     public ServoProfiler leftServoProfile;
     public ServoProfiler rightServoProfile;
 
+    // TODO make state machines if constants vary across opmode
+    public final static double VEL = 1.75;
+    public final static double ACCEL = 1;
+    public final static double PROP = 2;
+
     public enum Position {
         INIT(0.36), // was 0.35, .45
         EXTENDO_DEPOSIT(0.28),
@@ -42,11 +47,12 @@ public class Arm {
         leftServoProfile = new ServoProfiler(leftServo);
         rightServoProfile = new ServoProfiler(rightServo);
 
-        leftServoProfile.setConstraints(1.75, 1, 2);
-        rightServoProfile.setConstraints(1.75, 1, 2);
+        leftServoProfile.setConstraints(VEL, ACCEL, PROP);
+        rightServoProfile.setConstraints(VEL, ACCEL, PROP);
 
-        leftServo.setPosition(0);
-        rightServo.setPosition(0);
+        // TODO: uncomment if smt wrong w/ servos
+//        leftServo.setPosition(0);
+//        rightServo.setPosition(0);
 
         armPosition = Position.INIT;
 

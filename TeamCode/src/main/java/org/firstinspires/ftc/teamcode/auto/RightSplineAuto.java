@@ -54,7 +54,22 @@ public class RightSplineAuto extends LinearOpMode {
 
     double parkZone = 34.2;
 
+    PathState pathState;
+    ElapsedTime timer;
+
     AprilTagDetection tagOfInterest = null;
+
+    enum PathState {
+        START_TO_HIGH,
+        HIGH_TO_CONE_STACK,
+        FIND_CONE,
+        CONE_STACK_TO_HIGH,
+        PARK;
+    }
+
+    int conesDeposited = 0;
+    // 6 = 1+5 auto
+    final int MAX_CONES_DEPOSITED = 6;
 
     @Override
     public void runOpMode()
@@ -63,9 +78,7 @@ public class RightSplineAuto extends LinearOpMode {
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
-        slidesTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        outTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        intakeTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         drive = new SampleMecanumDrive(hardwareMap);
         robot = new Robot(hardwareMap);
@@ -253,12 +266,59 @@ public class RightSplineAuto extends LinearOpMode {
 
                 .build();
 
-
+        pathState = PathState.START_TO_HIGH;
 
         // ADDED Pose estimate right before start
         drive.setPoseEstimate(startPose);
         drive.followTrajectorySequenceAsync(startToHigh);
+
         while(opModeIsActive() && !isStopRequested()){
+
+            switch (pathState){
+                case START_TO_HIGH:
+                    // arm deposit and slides lift in trajectory sequence
+                    if(!drive.isBusy()){
+                        // outtake for 0.25 seconds (in trajectory sequence)
+                        conesDeposited++;
+                        drive.followTrajectorySequenceAsync(highToConeStack);
+                        pathState = PathState.HIGH_TO_CONE_STACK;
+                    }
+                    break;
+                case HIGH_TO_CONE_STACK:
+                    // arm intake pos and slides drop in trajectory sequence
+                    if(!drive.isBusy()){
+                        // start intake
+                        pathState = PathState.FIND_CONE;
+                    }
+                    break;
+                case FIND_CONE:
+                    while(!robot.intake.isStalled()){
+                        // drop slides until intake picks up
+                    }
+                    drive.followTrajectorySequenceAsync(coneStacktoHigh);
+                    pathState = PathState.CONE_STACK_TO_HIGH;
+                    // drive.followTrajectory(toConeStack)
+                    break;
+                case CONE_STACK_TO_HIGH:
+                    if(!drive.isBusy()){
+                        // outtake for X seconds
+                        if(conesDeposited < MAX_CONES_DEPOSITED){
+                            pathState = PathState.HIGH_TO_CONE_STACK;
+                            // drive.followTrajectory(conestack)
+                        }
+                        else {
+                            pathState = PathState.PARK;
+                            // drive.followTrajectory(park)
+                        }
+                    }
+                    break;
+                case PARK:
+                    if(!drive.isBusy()){
+
+                    }
+                    break;
+            }
+
             drive.update();
             robot.arm.update();
 

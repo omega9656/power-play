@@ -301,7 +301,10 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getAngularVelocity().zRotationRate;
+        // TODO check if turning/heading works return (double) imu.getAngularVelocity().zRotationRate;
+        // rotates along x axis because control hub is upright w/ usb facing upwards
+        // https://www.learnroadrunner.com/dead-wheels.html#imu-velocity-axis
+        return (double) imu.getAngularVelocity().xRotationRate;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {

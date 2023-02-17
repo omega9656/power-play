@@ -14,34 +14,34 @@ public class SubassemblyTest extends OpMode {
     Robot robot;
 
     // arm
-    public static boolean testArm = true;
-    public static double intake = 0;
-    public static double init = 0;
-    public static double deposit = 0;
-    public static double intakeDeposit = 0;
+    public static boolean armTest = true;
+    public static double armVel = 1;
+    public static double armAccel = 1;
+    public static double armProp = 1;
+    public static double armIntakePos = 0;
+    public static double armInit = 0;
+    public static double armDeposit = 0;
+
 
     // slides
-    public static boolean testSlides = false;
-    public static int high = 0;
-    public static int mid = 0;
-    public static int low = 0;
-    public static int slidesIntake = 0;
+    public static boolean slidesTest = false;
+    public static int slidesHigh = 1600;
+    public static int slidesMid = 930;
+    public static int slidesReady = 600;
+    public static int slidesLowAndIntake = 180;
+    public static int slidesPower = 1;
 
-    public static int cone5 = 0;
-    public static int cone4 = 0;
-    public static int cone3 = 0;
-    public static int cone2 = 0;
+    public static int autoCone5 = 0;
+    public static int autoCone4 = 0;
+    public static int autoCone3 = 0;
+    public static int autoCone2 = 0;
 
     // intake
-    public static boolean testIntake = false;
-    public boolean stalled = false;
-    public double inPower = 0;
-    public double holdPower = 0;
-    public double outPower = 0;
-
-
-    public double stallCurrent = 9.2; // amps
-
+    public static boolean intakeTest = false;
+    public boolean intakeStalled = false;
+    public double intakeInPower = 0;
+    public double intakeHoldPower = 0;
+    public double intakeOutPower = 0;
 
     @Override
     public void init() {
@@ -51,33 +51,61 @@ public class SubassemblyTest extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 
+    @Override
+    public void init_loop() {
+        robot.arm.update();
+
+        telemetry.addData("current arm pos: ", robot.arm.getCurrentPosition());
+        telemetry.addData("target arm pos: ", robot.arm.getTargetPosition());
+        telemetry.update();
+    }
+
+    public void moveSlides(){
+        // high
+        if(gamepad2.dpad_up){
+            robot.slides.high();
+        }
+        // mid
+        if(gamepad2.dpad_right){
+            robot.slides.medium();
+        }
+        // low
+        if(gamepad2.dpad_left){
+            robot.slides.lowAndIntake();
+        }
+        // ready
+        if(gamepad2.dpad_down){
+            robot.slides.ready();
+        }
+    }
+
     public void moveArm(){
         // zero position, intake
         if(gamepad2.b){
-            robot.arm.setArmPosition(intake);
+            robot.arm.setArmPosition(armIntakePos);
         }
         // init position
         if(gamepad2.a){
-            robot.arm.setArmPosition(init);
+            robot.arm.setArmPosition(armInit);
         }
         // normal deposit position
         if(gamepad2.x){
-            robot.arm.setArmPosition(deposit);
+            robot.arm.setArmPosition(armDeposit);
         }
     }
 
     public void intake(){
         //hold
         if(gamepad2.left_bumper || robot.intake.isStalled()){
-            robot.intake.setPower(holdPower);
+            robot.intake.setPower(intakeHoldPower);
         }
         //outtake
         else if(gamepad2.left_trigger > 0.3){
-            robot.intake.setPower(outPower);
+            robot.intake.setPower(intakeOutPower);
         }
         //intake
         else if(gamepad2.right_trigger > 0.3){
-            robot.intake.setPower(inPower);
+            robot.intake.setPower(intakeInPower);
         }
         else {
             robot.intake.setPower(0);
@@ -86,10 +114,12 @@ public class SubassemblyTest extends OpMode {
 
     @Override
     public void loop() {
-        if(testArm) {
+        telemetry.addLine("Gamepad 2: ");
+        if(armTest) {
+            robot.arm.setConstraints(armVel, armAccel, armProp);
+            robot.arm.update();
             moveArm();
 
-            telemetry.addLine("Gamepad 2: ");
             telemetry.addLine("         B: intake ");
             telemetry.addLine("         A: init ");
             telemetry.addLine("         X: deposit ");
@@ -98,16 +128,27 @@ public class SubassemblyTest extends OpMode {
             telemetry.addData("target arm pos: ", robot.arm.getTargetPosition());
         }
 
-        if(testIntake){
+        if(intakeTest){
             intake();
 
-            telemetry.addLine("Gamepad 2: ");
             telemetry.addLine("         Right trigger: intake ");
             telemetry.addLine("         Left trigger: outtake ");
             telemetry.addLine("         Left bumper: hold ");
 
-            telemetry.addData("Is the intake motor stalled? ", stalled);
+            telemetry.addData("Is the intake motor stalled? ", intakeStalled);
             telemetry.addData("current intake power: ", robot.intake.getPower());
+        }
+
+        if(slidesTest){
+            robot.slides.setSlidesPower(slidesPower);
+            moveSlides();
+
+            telemetry.addLine("         dpad up: high ");
+            telemetry.addLine("         dpad right: medium ");
+            telemetry.addLine("         dpad left: low ");
+            telemetry.addLine("         dpad low: ready ");
+
+            telemetry.addData("slides power", robot.slides.leftSlides.getPower());
         }
 
 
