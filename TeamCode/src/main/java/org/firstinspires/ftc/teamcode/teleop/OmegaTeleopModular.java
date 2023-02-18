@@ -44,8 +44,6 @@ public class OmegaTeleopModular extends OpMode {
     @Override
     public void init_loop() {
 
-//        robot.arm.leftServoProfile.update();
-//        robot.arm.rightServoProfile.update(robot.arm.leftServoProfile);
         robot.arm.update();
 
         telemetry.addData("left servo pos: ", robot.arm.leftServoProfile.getCurrentPosition());
@@ -63,24 +61,22 @@ public class OmegaTeleopModular extends OpMode {
             drive(2, DriveMode.CUBED);
         }
 
-//        robot.arm.leftServoProfile.update();
-//        robot.arm.rightServoProfile.update();
-        robot.slides.setPowerProportional();
+        //robot.slides.setPowerProportional();
+        robot.slides.setSlidesPower(1);
+
         robot.arm.update();
         deposit();
         intake();
         extendoLift();
 
-        telemetry.addData("front left: ", robot.drivetrain.frontLeft.getPower());
-        telemetry.addData("front right: ", robot.drivetrain.frontRight.getPower());
-        telemetry.addData("back left: ", robot.drivetrain.backLeft.getPower());
-        telemetry.addData("back right: ", robot.drivetrain.backRight.getPower());
-
         telemetry.addData("slides ", robot.slides.getCurrentPosition());
         telemetry.addData("slides targ", robot.slides.targetPos.pos);
         telemetry.addData("slides pow", robot.slides.leftSlides.getPower());
-        telemetry.addData("left servo pos: ", robot.arm.leftServoProfile.getCurrentPosition());
-        telemetry.addData("left servo targ: ", robot.arm.leftServoProfile.getTargetPosition());
+
+        telemetry.addData("left servo pos: ", robot.arm.getCurrentPosition());
+        telemetry.addData("left servo targ: ", robot.arm.getTargetPosition());
+
+        telemetry.update();
     }
 
     public void deposit(){

@@ -19,13 +19,12 @@ public class Slides {
     final double proportional = 1 / 1000.0;
 
     public enum State {
-        GIGA_HIGH(2000), // 2075
-        HIGH(1600), // 1670
-        AUTO_HIGH(1700), // 1800
-        MID(930), // 980
-        READY(600), // 600
-        CYCLE_READY(300), // 300
-        LOW_AND_INTAKE(180), // 180
+        GIGA_HIGH(2100), // 2075
+        HIGH(1700), // 1670
+        MID(1030), // 980
+        READY(700), // 600
+        CYCLE_READY(400), // 300
+        LOW_AND_INTAKE(280), // 180
         INIT(0),
 
 
@@ -85,9 +84,17 @@ public class Slides {
     public void run(State s){
         targetPos = s;
 
-        // TODO uncomment to use no profile
         leftSlides.setTargetPosition(s.pos);
         rightSlides.setTargetPosition(s.pos);
+    }
+
+    /**
+     * sets positions to motors w/o state machines, for testing
+     * @param pos target position for the slides
+     */
+    public void setTargetPos(int pos){
+        leftSlides.setTargetPosition(pos);
+        rightSlides.setTargetPosition(pos);
     }
 
     /**

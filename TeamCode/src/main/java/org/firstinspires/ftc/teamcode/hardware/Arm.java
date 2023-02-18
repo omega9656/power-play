@@ -15,12 +15,12 @@ public class Arm {
     public final static double PROP = 2;
 
     public enum Position {
-        INIT(0.36), // was 0.35, .45
+        INIT(0.36),
         EXTENDO_DEPOSIT(0.28),
         INTAKE(0),
-        DEPOSIT(0.52), // was .6
+        DEPOSIT(0.55),
         AUTO_DEPOSIT(0.6),
-        GIGA_EXTENDO(1);
+        GIGA_EXTENDO(0.95);
 
         // this is a value from 0 to 1
         public double pos;
@@ -51,8 +51,8 @@ public class Arm {
         rightServoProfile.setConstraints(VEL, ACCEL, PROP);
 
         // TODO: uncomment if smt wrong w/ servos
-//        leftServo.setPosition(0);
-//        rightServo.setPosition(0);
+        leftServo.setPosition(leftServo.getPosition());
+        rightServo.setPosition(rightServo.getPosition());
 
         armPosition = Position.INIT;
 

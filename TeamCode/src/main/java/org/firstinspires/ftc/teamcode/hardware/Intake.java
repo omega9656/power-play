@@ -14,7 +14,7 @@ public class Intake {
     private final double STALL_CURRENT = 9.2;
 
     public enum Mode {
-        IN(-0.6),   // intake the cone
+        IN(-0.8),   // intake the cone
         HOLD(-0.3), // hold cone in place when moving
         OUT(0.6), // deposit the cone
         STOP(0);
