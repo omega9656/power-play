@@ -51,8 +51,8 @@ public class Arm {
         rightServoProfile.setConstraints(VEL, ACCEL, PROP);
 
         // TODO: uncomment if smt wrong w/ servos
-        leftServo.setPosition(leftServo.getPosition());
-        rightServo.setPosition(rightServo.getPosition());
+        leftServo.setPosition(0);
+        rightServo.setPosition(0);
 
         armPosition = Position.INIT;
 

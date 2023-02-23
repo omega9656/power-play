@@ -20,7 +20,8 @@ public class MeepMeepTesting {
     }
 
     public static void startToHigh(MeepMeep meepMeep){
-        Pose2d start = new Pose2d(34, -62, Math.toRadians(270));
+        Pose2d start = new Pose2d(34.3, -62.016, Math.toRadians(0));
+        Pose2d start2 = new Pose2d(34.3, -62, Math.toRadians(270));
 
         //                           -58
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
@@ -28,8 +29,10 @@ public class MeepMeepTesting {
                 .setConstraints(48, 30, 55, Math.toRadians(60), 13)
                 .followTrajectorySequence(drive -> // start pose
                         drive.trajectorySequenceBuilder(start).setReversed(true)
-                                .splineToSplineHeading(new Pose2d(34, -30, Math.toRadians(270)), Math.toRadians(90))
-                                .splineToSplineHeading(new Pose2d(28, -12, Math.toRadians(315)), Math.toRadians(90))
+                                //.splineToSplineHeading(new Pose2d(34.3, -10, Math.toRadians(270)), Math.toRadians(90))
+                                .splineToSplineHeading(new Pose2d(34.3, -50, Math.toRadians(270)), Math.toRadians(90))
+                                .splineToSplineHeading(new Pose2d(34.3, -10, Math.toRadians(270)), Math.toRadians(90))
+                                //.splineToSplineHeading(new Pose2d(28, -12, Math.toRadians(315)), Math.toRadians(90))
 
                                 .setReversed(false)
                                 .splineToSplineHeading(new Pose2d(40, -14, Math.toRadians(0)), Math.toRadians(0))

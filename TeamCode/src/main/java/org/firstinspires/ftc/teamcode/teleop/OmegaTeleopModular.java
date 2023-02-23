@@ -19,7 +19,7 @@ public class OmegaTeleopModular extends OpMode {
     ElapsedTime time;
     BNO055IMU imu;
 
-    boolean fieldCentric = true;
+    public static boolean fieldCentric = true;
     boolean slidesProfile = false;
 
     @Override
