@@ -6,6 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
 @Config
@@ -61,8 +64,8 @@ public class OmegaTeleopModular extends OpMode {
             drive(2, DriveMode.CUBED);
         }
 
-        //robot.slides.setPowerProportional();
-        robot.slides.setSlidesPower(1);
+        robot.slides.setPowerProportional();
+        //robot.slides.setSlidesPower(1);
 
         robot.arm.update();
         deposit();
@@ -75,6 +78,11 @@ public class OmegaTeleopModular extends OpMode {
 
         telemetry.addData("left servo pos: ", robot.arm.getCurrentPosition());
         telemetry.addData("left servo targ: ", robot.arm.getTargetPosition());
+
+        telemetry.addData("front left: ", robot.drivetrain.frontLeft.getPower());
+        telemetry.addData("front right: ", robot.drivetrain.frontRight.getPower());
+        telemetry.addData("back left: ", robot.drivetrain.backLeft.getPower());
+        telemetry.addData("back right: ", robot.drivetrain.backRight.getPower());
 
         telemetry.update();
     }
@@ -139,13 +147,13 @@ public class OmegaTeleopModular extends OpMode {
 
     public void fieldCentricDrive(DriveMode driveMode) {
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-        double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+        double x = gamepad1.left_stick_x * 1.8; // Counteract imperfect strafing
         double rx = gamepad1.right_stick_x ; //  * 0.75
 
         // robot ends up in different orientation after auto
         double offset = Math.toRadians(270); // degrees
         // Read inverse IMU heading, as the IMU heading is CW positive
-        double botHeading = -(imu.getAngularOrientation().firstAngle + offset);
+        double botHeading = -(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle + offset);
 
         double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
         double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
@@ -172,10 +180,10 @@ public class OmegaTeleopModular extends OpMode {
             backRightPower = Math.pow(backRightPower, 3);
         } // if drive mode is normal, don't do anything
 
-        robot.drivetrain.frontLeft.setPower(frontLeftPower * 0.6);
-        robot.drivetrain.backLeft.setPower(backLeftPower * 0.6);
-        robot.drivetrain.frontRight.setPower(frontRightPower * 0.6);
-        robot.drivetrain.backRight.setPower(backRightPower * 0.6);
+        robot.drivetrain.frontLeft.setPower(frontLeftPower);
+        robot.drivetrain.backLeft.setPower(backLeftPower);
+        robot.drivetrain.frontRight.setPower(frontRightPower);
+        robot.drivetrain.backRight.setPower(backRightPower);
     }
 
     public void drive(double strafe, DriveMode driveMode){

@@ -20,6 +20,7 @@ public class Slides {
 
     public enum State {
         GIGA_HIGH(2100), // 2075
+        AUTO_HIGH(1900),
         HIGH(1700), // 1670
         MID(1030), // 980
         READY(700), // 600
@@ -110,6 +111,10 @@ public class Slides {
     public void gigaHigh() {
         run(State.GIGA_HIGH);}
 
+    public void autoHigh(){
+        run(State.AUTO_HIGH);
+    }
+
     /**
      * Method for moving the slides to the high position.
      */
@@ -179,7 +184,9 @@ public class Slides {
         double power = Range.clip(MIN_POWER + (Math.abs(targetPos.pos - getCurrentPosition()) * proportional),
                 MIN_POWER, 1.0);
 
-        if(targetPos.pos - getCurrentPosition() < 0){
+        // going down 0.8 power if substantial
+        // TODO, fix loop to activate only when moving to different state
+        if(targetPos.pos - getCurrentPosition() < 0 && Math.abs(targetPos.pos - getCurrentPosition()) > 200){
             setSlidesPower(0.8);
         }
         else {

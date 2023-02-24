@@ -19,7 +19,7 @@ public class Arm {
         EXTENDO_DEPOSIT(0.28),
         INTAKE(0),
         DEPOSIT(0.55),
-        AUTO_DEPOSIT(0.6),
+        AUTO_DEPOSIT(0.65),
         GIGA_EXTENDO(0.95);
 
         // this is a value from 0 to 1
@@ -119,6 +119,12 @@ public class Arm {
     public void extendoDeposit() {
         setArmPosition(Position.EXTENDO_DEPOSIT);
     }
+
+    /**
+     * Sets the position of the left and right servos to the "AUTO DEPOSIT" outtake position
+     * -- for depositing to high during autonomous
+     */
+    public void autoDeposit() { setArmPosition(Position.AUTO_DEPOSIT);}
 
     /**
      * gets current servo position
