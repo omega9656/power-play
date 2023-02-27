@@ -20,7 +20,7 @@ public class SubassemblyTest extends OpMode {
     public static double armProp = 1;
     public static double armIntakePos = 0;
     public static double armInit = 0.36;
-    public static double armDeposit = 0.52;
+    public static double armDeposit = 0.58;
     public static double armGigaIntake = 0.95;
     public static double armGigaDeposit = 0.28;
 

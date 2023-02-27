@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
@@ -15,8 +16,9 @@ public class Intake {
 
     public enum Mode {
         IN(-0.8),   // intake the cone
-        HOLD(-0.3), // hold cone in place when moving
-        OUT(0.6), // deposit the cone
+        HOLD(-0.4), // hold cone in place when moving
+        TELE_HOLD(-0.1),
+        OUT(0.7), // deposit the cone
         STOP(0);
 
         public double power;
@@ -56,11 +58,23 @@ public class Intake {
         run(Mode.IN);
     }
 
+    public void scaledIn(double power) {
+        motor.setPower(power);
+        state = Mode.IN;
+    }
+
     /**
      * Hold cone in place when moving
      */
     public void hold() {
         run(Mode.HOLD);
+    }
+
+    /**
+     * holds cone in place when moving in teleop
+     */
+    public void telehold(){
+        run(Mode.TELE_HOLD);
     }
 
     /**

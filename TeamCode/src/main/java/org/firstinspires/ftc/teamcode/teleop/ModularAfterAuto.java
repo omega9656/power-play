@@ -44,8 +44,6 @@ public class ModularAfterAuto extends OpMode {
     @Override
     public void init_loop() {
 
-//        robot.arm.leftServoProfile.update();
-//        robot.arm.rightServoProfile.update(robot.arm.leftServoProfile);
         robot.arm.update();
 
         telemetry.addData("left servo pos: ", robot.arm.leftServoProfile.getCurrentPosition());
@@ -112,14 +110,16 @@ public class ModularAfterAuto extends OpMode {
     }
 
     public void intake(){
-        robot.intake.hold();
         // in
         if(gamepad2.right_trigger > 0.3){
             robot.intake.in();
         }
         // out
-        if(gamepad2.left_trigger > 0.3){
+        else if(gamepad2.left_trigger > 0.3){
             robot.intake.out();
+        }
+        else {
+            robot.intake.telehold();
         }
     }
 

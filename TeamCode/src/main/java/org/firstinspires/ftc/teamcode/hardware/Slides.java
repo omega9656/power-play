@@ -7,25 +7,24 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-
 public class Slides {
     public DcMotorEx leftSlides;
     public DcMotorEx rightSlides;
 
     public State targetPos;
 
-    final double MIN_POWER = 0.1;
+    final double MIN_POWER = 0.00625;
 
     final double proportional = 1 / 1000.0;
 
     public enum State {
         GIGA_HIGH(2100), // 2075
-        AUTO_HIGH(1900),
-        HIGH(1700), // 1670
-        MID(1030), // 980
+        AUTO_HIGH(1860),
+        HIGH(1650), // 1700
+        MID(980), // 1030
         READY(700), // 600
         CYCLE_READY(400), // 300
-        LOW_AND_INTAKE(280), // 180
+        LOW_AND_INTAKE(220), // 180
         INIT(0),
 
 
@@ -194,6 +193,10 @@ public class Slides {
         }
     }
 
+    /**
+     *
+     * @param power
+     */
     public void setSlidesPower(double power){
         leftSlides.setPower(power);
         rightSlides.setPower(power);

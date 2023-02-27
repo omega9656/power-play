@@ -14,11 +14,18 @@ public class Arm {
     public final static double ACCEL = 1;
     public final static double PROP = 2;
 
+    // up values
+    public final static double v = 2;
+    public final static double a = 2;
+    public final static double p = 2;
+
+    public boolean isGoingUpwards;
+
     public enum Position {
         INIT(0.36),
         EXTENDO_DEPOSIT(0.28),
         INTAKE(0),
-        DEPOSIT(0.55),
+        DEPOSIT(0.58),
         AUTO_DEPOSIT(0.65),
         GIGA_EXTENDO(0.95);
 
@@ -54,14 +61,19 @@ public class Arm {
         leftServo.setPosition(0);
         rightServo.setPosition(0);
 
-        armPosition = Position.INIT;
+        armPosition = Position.INTAKE;
 
         init();
+        isGoingUpwards = true;
     }
 
     public void setConstraints(double vel, double accel, double prop){
         leftServoProfile.setConstraints(vel, accel, prop);
         rightServoProfile.setConstraints(vel, accel, prop);
+    }
+
+    public double[] getConstraints(){
+        return new double[]{leftServoProfile.getMaxVel(), leftServoProfile.getMaxAccel()};
     }
 
     /**
@@ -70,6 +82,9 @@ public class Arm {
      * @param pos The position to set the servos to.
      */
     public void setArmPosition(Position pos) {
+        // if current < future pos and future position isn't extendo intake then diff constrains
+        isGoingUpwards = armPosition.pos < pos.pos;
+
         armPosition = pos;
         leftServoProfile.setTargetPosition(pos.pos);
         rightServoProfile.setTargetPosition(pos.pos);
@@ -143,11 +158,18 @@ public class Arm {
     }
 
     /**
-     * Updates the positions of the left and right servos.
+     * Updates the positions and constants of the left and right servos.
      */
     public void update() {
         leftServoProfile.update();
         rightServoProfile.update(leftServoProfile);
+
+        if(isGoingUpwards){
+            setConstraints(v, a, p);
+        }
+        else {
+            setConstraints(VEL, ACCEL, PROP);
+        }
     }
 
 

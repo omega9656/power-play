@@ -11,6 +11,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
+import java.util.Arrays;
+
 @Config
 @TeleOp
 public class OmegaTeleopModular extends OpMode {
@@ -41,7 +43,6 @@ public class OmegaTeleopModular extends OpMode {
         // Without this, data retrieving from the IMU throws an exception
         imu.initialize(parameters);
         robot.arm.init();
-        robot.arm.setConstraints(1.5, 1, 2);
     }
 
     @Override
@@ -71,6 +72,9 @@ public class OmegaTeleopModular extends OpMode {
         deposit();
         intake();
         extendoLift();
+
+        telemetry.addData("is arm going upwards", robot.arm.isGoingUpwards);
+        telemetry.addData("arm constraints vel, accel", Arrays.toString(robot.arm.getConstraints()));
 
         telemetry.addData("slides ", robot.slides.getCurrentPosition());
         telemetry.addData("slides targ", robot.slides.targetPos.pos);
@@ -116,14 +120,16 @@ public class OmegaTeleopModular extends OpMode {
     }
 
     public void intake(){
-        robot.intake.hold();
-        // in
+        // in; buffer point
         if(gamepad2.right_trigger > 0.3){
             robot.intake.in();
         }
         // out
-        if(gamepad2.left_trigger > 0.3){
+        else if(gamepad2.left_trigger > 0.1){
             robot.intake.out();
+        }
+        else {
+            robot.intake.telehold();
         }
     }
 
