@@ -31,6 +31,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.teleop.OmegaTeleopModular;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -77,6 +78,8 @@ public class ParkLines extends LinearOpMode
     int zoneX = 33;
 
     AprilTagDetection tagOfInterest = null;
+
+    boolean gotHeading = false;
 
     @Override
     public void runOpMode()
@@ -229,17 +232,19 @@ public class ParkLines extends LinearOpMode
         }
 
         TrajectorySequence t = drive.trajectorySequenceBuilder(startPose).setReversed(true)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    robot.slides.ready();
-                    robot.intake.hold();
-                })
-                .lineToConstantHeading(new Vector2d(34.2, -36))
-                .turn(Math.toRadians(90))
-                .lineToConstantHeading(new Vector2d(zoneX, -36))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    robot.arm.intake();
-                    robot.slides.init();
-                })
+//                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+//                    robot.slides.ready();
+//                    robot.intake.hold();
+//                })
+//                .lineToConstantHeading(new Vector2d(34.2, -36))
+//                .turn(Math.toRadians(90))
+//                .lineToConstantHeading(new Vector2d(zoneX, -36))
+//                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+//                    robot.arm.intake();
+//                    robot.slides.init();
+//                })
+                .back(30)
+                .turn(Math.toRadians(70))
                 .build();
 
         drive.followTrajectorySequenceAsync(t);
@@ -254,6 +259,11 @@ public class ParkLines extends LinearOpMode
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
             telemetry.update();
+
+            if(!drive.isBusy() && !gotHeading){
+                OmegaTeleopModular.startHeading = Math.toDegrees(drive.getPoseEstimate().getHeading());
+                gotHeading = true;
+            }
         }
     }
 

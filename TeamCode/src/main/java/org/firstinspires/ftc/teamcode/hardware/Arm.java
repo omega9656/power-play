@@ -15,9 +15,9 @@ public class Arm {
     public final static double PROP = 2;
 
     // up values
-    public final static double v = 2;
-    public final static double a = 2;
-    public final static double p = 2;
+    public final static double v = 80;
+    public final static double a = 30;
+    public final static double p = 3;
 
     public boolean isGoingUpwards;
 
@@ -61,9 +61,9 @@ public class Arm {
         leftServo.setPosition(0);
         rightServo.setPosition(0);
 
-        armPosition = Position.INTAKE;
-
+        armPosition = Position.INIT;
         init();
+
         isGoingUpwards = true;
     }
 
@@ -72,6 +72,10 @@ public class Arm {
         rightServoProfile.setConstraints(vel, accel, prop);
     }
 
+    /**
+     * gets max vel and max accel information
+     * @return array of velocity and acceleration constraints
+     */
     public double[] getConstraints(){
         return new double[]{leftServoProfile.getMaxVel(), leftServoProfile.getMaxAccel()};
     }
@@ -83,9 +87,8 @@ public class Arm {
      */
     public void setArmPosition(Position pos) {
         // if current < future pos and future position isn't extendo intake then diff constrains
-        isGoingUpwards = armPosition.pos < pos.pos;
-
         armPosition = pos;
+
         leftServoProfile.setTargetPosition(pos.pos);
         rightServoProfile.setTargetPosition(pos.pos);
     }
@@ -163,6 +166,8 @@ public class Arm {
     public void update() {
         leftServoProfile.update();
         rightServoProfile.update(leftServoProfile);
+
+        isGoingUpwards = getCurrentPosition() < armPosition.pos || armPosition == Position.EXTENDO_DEPOSIT;
 
         if(isGoingUpwards){
             setConstraints(v, a, p);

@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.teleop.OmegaTeleopModular;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -23,12 +24,12 @@ import java.util.ArrayList;
 
 @Config
 @Autonomous
-public class RightSplineAuto extends LinearOpMode {
+public class RightSplineAutoCancellable extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
     Robot robot;
-    SampleMecanumDrive drive;
+    SampleMecanumDriveCancelable drive;
 
     Pose2d startPose = new Pose2d(33.851016, -61.73, Math.toRadians(270));
     //Pose2d startPose = new Pose2d(34.3, -62.016, Math.toRadians(0));
@@ -81,7 +82,7 @@ public class RightSplineAuto extends LinearOpMode {
 
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        drive = new SampleMecanumDrive(hardwareMap);
+        drive = new SampleMecanumDriveCancelable(hardwareMap);
         robot = new Robot(hardwareMap);
         robot.init(true, false);
 

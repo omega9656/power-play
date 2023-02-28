@@ -24,6 +24,9 @@ public class OmegaTeleopModular extends OpMode {
     ElapsedTime time;
     BNO055IMU imu;
 
+    // default, in degrees
+    public static double startHeading = 270;
+
     public static boolean fieldCentric = true;
     boolean slidesProfile = false;
 
@@ -50,6 +53,11 @@ public class OmegaTeleopModular extends OpMode {
 
         robot.arm.update();
 
+        telemetry.addData("start heading", startHeading);
+        telemetry.addData("is arm going upwards", robot.arm.isGoingUpwards);
+        telemetry.addData("target pos", robot.arm.armPosition);
+        telemetry.addData("arm constraints vel, accel", Arrays.toString(robot.arm.getConstraints()));
+
         telemetry.addData("left servo pos: ", robot.arm.leftServoProfile.getCurrentPosition());
         telemetry.addData("left servo targ: ", robot.arm.leftServoProfile.getTargetPosition());
 
@@ -74,6 +82,7 @@ public class OmegaTeleopModular extends OpMode {
         extendoLift();
 
         telemetry.addData("is arm going upwards", robot.arm.isGoingUpwards);
+        telemetry.addData("target pos", robot.arm.armPosition);
         telemetry.addData("arm constraints vel, accel", Arrays.toString(robot.arm.getConstraints()));
 
         telemetry.addData("slides ", robot.slides.getCurrentPosition());
@@ -157,9 +166,11 @@ public class OmegaTeleopModular extends OpMode {
         double rx = gamepad1.right_stick_x ; //  * 0.75
 
         // robot ends up in different orientation after auto
-        double offset = Math.toRadians(270); // degrees
+        double offset = Math.toRadians(startHeading-90); // degrees
         // Read inverse IMU heading, as the IMU heading is CW positive
         double botHeading = -(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle + offset);
+
+        telemetry.addData("heading", botHeading);
 
         double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
         double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
