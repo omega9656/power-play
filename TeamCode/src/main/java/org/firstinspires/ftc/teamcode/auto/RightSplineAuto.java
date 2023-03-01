@@ -234,7 +234,7 @@ public class RightSplineAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     robot.intake.out();
                 })
-                .waitSeconds(0.3)
+                .waitSeconds(0.15)
 
                 // lower
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -297,7 +297,7 @@ public class RightSplineAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     robot.intake.out();
                 })
-                .waitSeconds(0.2)
+                .waitSeconds(0.15)
 
                 // lower
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -335,7 +335,7 @@ public class RightSplineAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     robot.intake.out();
                 })
-                .waitSeconds(0.2)
+                .waitSeconds(0.15)
 
                 // lower
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -348,11 +348,11 @@ public class RightSplineAuto extends LinearOpMode {
                 })
 
                 // continuous path to cone stack
-                .splineToSplineHeading(new Pose2d(31, -11.55, Math.toRadians(315)), Math.toRadians(-45))
+                .splineToSplineHeading(new Pose2d(31.2, -11.75, Math.toRadians(315)), Math.toRadians(-45))
                 .splineToSplineHeading(new Pose2d(57.85, -12.4, Math.toRadians(0)), Math.toRadians(0))
 
                 // pick up cone                         -0.7
-                .UNSTABLE_addTemporalMarkerOffset(-0.9, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
                     robot.arm.intake();
                     robot.intake.in();
                 })

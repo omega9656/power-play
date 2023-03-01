@@ -25,7 +25,7 @@ public class OmegaTeleopModular extends OpMode {
     BNO055IMU imu;
 
     // default, in degrees
-    public static double startHeading = 270;
+    public static double startHeading = 360;
 
     public static boolean fieldCentric = true;
     boolean slidesProfile = false;

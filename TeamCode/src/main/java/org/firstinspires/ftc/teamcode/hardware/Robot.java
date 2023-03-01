@@ -30,7 +30,7 @@ public class Robot {
             drivetrain = new Drivetrain(deviceManager);
         }
 
-        arm = new Arm(deviceManager);
+        arm = new Arm(deviceManager, runningAuto);
         intake = new Intake(deviceManager);
         slides = new Slides(deviceManager, afterAuto);
     }

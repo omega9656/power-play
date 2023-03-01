@@ -21,6 +21,8 @@ public class Arm {
 
     public boolean isGoingUpwards;
 
+    private boolean isAuto;
+
     public enum Position {
         INIT(0.36),
         EXTENDO_DEPOSIT(0.28),
@@ -45,7 +47,7 @@ public class Arm {
      *
      * @param deviceManager The DeviceManager object used to get the left and right servos.
      */
-    public Arm(DeviceManager deviceManager) {
+    public Arm(DeviceManager deviceManager, boolean runningAuto) {
         leftServo = deviceManager.leftServo;
         rightServo = deviceManager.rightServo;
 
@@ -60,6 +62,8 @@ public class Arm {
         // TODO: uncomment if smt wrong w/ servos
         leftServo.setPosition(0);
         rightServo.setPosition(0);
+
+        isAuto = runningAuto;
 
         armPosition = Position.INIT;
         init();
@@ -167,7 +171,12 @@ public class Arm {
         leftServoProfile.update();
         rightServoProfile.update(leftServoProfile);
 
-        isGoingUpwards = getCurrentPosition() < armPosition.pos || armPosition == Position.EXTENDO_DEPOSIT;
+        if(isAuto){
+            isGoingUpwards = false;
+        }
+        else {
+            isGoingUpwards = getCurrentPosition() < armPosition.pos || armPosition == Position.EXTENDO_DEPOSIT;
+        }
 
         if(isGoingUpwards){
             setConstraints(v, a, p);
@@ -176,8 +185,5 @@ public class Arm {
             setConstraints(VEL, ACCEL, PROP);
         }
     }
-
-
-
 
 }
