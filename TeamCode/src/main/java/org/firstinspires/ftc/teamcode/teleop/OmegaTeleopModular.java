@@ -246,10 +246,10 @@ public class OmegaTeleopModular extends OpMode {
             robot.drivetrain.backLeft.setPower(backLeftPower);
         }
         else {
-            robot.drivetrain.frontLeft.setPower(frontLeftPower*.6);
-            robot.drivetrain.frontRight.setPower(frontRightPower*.6);
-            robot.drivetrain.backRight.setPower(backRightPower*.6);
-            robot.drivetrain.backLeft.setPower(backLeftPower*.6);
+            robot.drivetrain.frontLeft.setPower(frontLeftPower);
+            robot.drivetrain.frontRight.setPower(frontRightPower);
+            robot.drivetrain.backRight.setPower(backRightPower);
+            robot.drivetrain.backLeft.setPower(backLeftPower);
         }
     }
 }

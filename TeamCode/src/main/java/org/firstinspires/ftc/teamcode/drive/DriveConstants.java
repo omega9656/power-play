@@ -65,8 +65,8 @@ public class DriveConstants {
      */
     // TODO increased acceleration from 48
     public static double MAX_VEL = 64; // kf 13.3710845377307
-    // TODO increased acceleration from 30
-    public static double MAX_ACCEL = 35;
+    // TODO increased acceleration from 35
+    public static double MAX_ACCEL = 38;
     public static double MAX_ANG_VEL = 55;
     public static double MAX_ANG_ACCEL = Math.toRadians(60);
 

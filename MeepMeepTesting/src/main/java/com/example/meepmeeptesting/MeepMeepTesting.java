@@ -15,8 +15,43 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
-        //coneToHighSpline(meepMeep);
-        startToHigh(meepMeep);
+        startToMid(meepMeep);
+        //startToHigh(meepMeep);
+    }
+
+    public static void startToMid(MeepMeep meepMeep){
+        Pose2d start = new Pose2d(34.3, -62, Math.toRadians(270));
+
+        //                           -58
+        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAnccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(48, 30, 55, Math.toRadians(60), 13)
+                .followTrajectorySequence(drive -> // start pose
+                        drive.trajectorySequenceBuilder(start).setReversed(true)
+                                //.splineToSplineHeading(new Pose2d(34.3, -10, Math.toRadians(270)), Math.toRadians(90))
+                                .splineToSplineHeading(new Pose2d(34.3, -20, Math.toRadians(270)), Math.toRadians(90))
+                                .splineToSplineHeading(new Pose2d(30, -8, Math.toRadians(315)), Math.toRadians(135))
+                                //.splineToSplineHeading(new Pose2d(28, -12, Math.toRadians(315)), Math.toRadians(90))
+
+                                .setReversed(false)
+                                .splineToSplineHeading(new Pose2d(32, -10, Math.toRadians(315)), Math.toRadians(-45))
+                                .splineToSplineHeading(new Pose2d(58, -12, Math.toRadians(0)), Math.toRadians(0))
+
+                                .setReversed(true)
+                                .splineToSplineHeading(new Pose2d(43, -12, Math.toRadians(0)), Math.toRadians(180))
+                                .splineToSplineHeading(new Pose2d(27.6, -15.55, Math.toRadians(45)), Math.toRadians(225))
+
+                                .setReversed(false)
+                                .splineToSplineHeading(new Pose2d(27.6+1, -15.55+1, Math.toRadians(45)), Math.toRadians(45))
+                                .splineToSplineHeading(new Pose2d(57.85, -12.4, Math.toRadians(0)), Math.toRadians(0))
+                                .build()
+                );
+
+        meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_KAI_DARK)
+                .setDarkMode(true)
+                .setBackgroundAlpha(0.95f)
+                .addEntity(myBot)
+                .start();
     }
 
     public static void startToHigh(MeepMeep meepMeep){

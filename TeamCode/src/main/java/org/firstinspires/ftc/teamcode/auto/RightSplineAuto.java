@@ -213,6 +213,8 @@ public class RightSplineAuto extends LinearOpMode {
             parkZone = 8;
         }
 
+        double CONE_STACK_Y = -12.25;
+
         TrajectorySequence startToHigh = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> robot.intake.hold())
@@ -225,16 +227,18 @@ public class RightSplineAuto extends LinearOpMode {
                     robot.slides.autoHigh();
                     robot.arm.autoDeposit();
                 })
-                .build();
-
-        TrajectorySequence startHighToConeStack = drive.trajectorySequenceBuilder(startToHigh.end())
-                .setReversed(false)
 
                 // outtake + deposit
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     robot.intake.out();
                 })
-                .waitSeconds(0.15)
+
+                .build();
+
+        TrajectorySequence startHighToConeStack = drive.trajectorySequenceBuilder(startToHigh.end())
+                .setReversed(false)
+
+                //.waitSeconds(0.15)
 
                 // lower
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -249,12 +253,12 @@ public class RightSplineAuto extends LinearOpMode {
 
                 // continuous path to cone stack
                 //.splineToSplineHeading(new Pose2d(32.4, -12.4, Math.toRadians(315)), Math.toRadians(-45))
-                .splineToSplineHeading(new Pose2d(30.6, -12.55, Math.toRadians(315)), Math.toRadians(-45))
+                .splineToSplineHeading(new Pose2d(29.7, -11.65, Math.toRadians(315)), Math.toRadians(-45))
                 //.splineToSplineHeading(new Pose2d(40, -12.4, Math.toRadians(340)), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(57.85, -12.4, Math.toRadians(0)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(57.85, CONE_STACK_Y, Math.toRadians(0)), Math.toRadians(0))
 
                 // pick up cone                         -0.7
-                .UNSTABLE_addTemporalMarkerOffset(-0.775, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-0.8, () -> {
                     robot.arm.intake();
                     robot.intake.in();
                 })
@@ -277,10 +281,10 @@ public class RightSplineAuto extends LinearOpMode {
 
                 // continuous path to high junction same position as end of startToHigh
                 // TODO, added line below
-                .splineToSplineHeading(new Pose2d(43, -12.4, Math.toRadians(0)), Math.toRadians(180))
+                .splineToSplineHeading(new Pose2d(43, CONE_STACK_Y, Math.toRadians(0)), Math.toRadians(180))
 
                 // good below                          .5     -8.00
-                .splineToSplineHeading(new Pose2d(27.9, -8.45, Math.toRadians(315)), Math.toRadians(135))
+                .splineToSplineHeading(new Pose2d(27.7, -8.25, Math.toRadians(315)), Math.toRadians(135))
 
                 // deposit
                 .UNSTABLE_addTemporalMarkerOffset(-3, () -> {
@@ -288,16 +292,17 @@ public class RightSplineAuto extends LinearOpMode {
                     robot.arm.autoDeposit();
                 })
 
+                // outtake + deposit
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    robot.intake.out();
+                })
+
                 .build();
 
         TrajectorySequence highToConeStack = drive.trajectorySequenceBuilder(coneStacktoHigh.end())
                 .setReversed(false)
 
-                // outtake + deposit
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    robot.intake.out();
-                })
-                .waitSeconds(0.15)
+                //.waitSeconds(0.15)
 
                 // lower
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -311,10 +316,10 @@ public class RightSplineAuto extends LinearOpMode {
 
                 // continuous path to cone stack
                 .splineToSplineHeading(new Pose2d(30.4, -10.95, Math.toRadians(315)), Math.toRadians(-45))
-                .splineToSplineHeading(new Pose2d(57.85, -12.4, Math.toRadians(0)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(57.85, CONE_STACK_Y, Math.toRadians(0)), Math.toRadians(0))
 
-                // pick up cone                         -0.7
-                .UNSTABLE_addTemporalMarkerOffset(-0.775, () -> {
+                // pick up cone                         -0.775
+                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
                     robot.arm.intake();
                     robot.intake.in();
                 })
@@ -331,11 +336,11 @@ public class RightSplineAuto extends LinearOpMode {
         TrajectorySequence lastHighToConeStack = drive.trajectorySequenceBuilder(coneStacktoHigh.end())
                 .setReversed(false)
 
-                // outtake + deposit
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    robot.intake.out();
-                })
-                .waitSeconds(0.15)
+//                // outtake + deposit
+//                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+//                    robot.intake.out();
+//                })
+//                .waitSeconds(0.15)
 
                 // lower
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -349,10 +354,10 @@ public class RightSplineAuto extends LinearOpMode {
 
                 // continuous path to cone stack
                 .splineToSplineHeading(new Pose2d(31.2, -11.75, Math.toRadians(315)), Math.toRadians(-45))
-                .splineToSplineHeading(new Pose2d(57.85, -12.4, Math.toRadians(0)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(57.85, CONE_STACK_Y, Math.toRadians(0)), Math.toRadians(0))
 
                 // pick up cone                         -0.7
-                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-1.3, () -> {
                     robot.arm.intake();
                     robot.intake.in();
                 })
