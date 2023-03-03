@@ -18,9 +18,10 @@ public class Slides {
     final double proportional = 1 / 1000.0;
 
     public enum State {
-        GIGA_HIGH(2100), // 2075
+        GIGA_HIGH(2000), // 2075
         AUTO_HIGH(1860),
         HIGH(1650), // 1700
+        AUTO_MID(1100),
         MID(980), // 1030
         READY(700), // 600
         CYCLE_READY(400), // 300
@@ -154,6 +155,13 @@ public class Slides {
      */
     public void fifthAutoCone() {
         run(State.CONE_5);}
+
+    /**
+     * Method for moving slides to mid auto position
+     */
+    public void autoMid(){
+        run(State.AUTO_MID);
+    }
 
     /**
      * Method for lowering slides from above cone stack
